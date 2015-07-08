@@ -1,0 +1,87 @@
+{% load i18n %}
+{% load crewdb_extras %}
+{% load i18n admin_static admin_modify suit_tags admin_urls %}
+<div class="tabular inline-related ">
+{% for bill in billings.bills.bills %}
+{% if forloop.first %}
+<fieldset class="module">
+   <h2>{% trans 'Billings' %}</h2>
+   <table class="table table-bordered table-condensed table-striped">
+     <thead id="billing_set-thead"><tr>
+        <th colspan="1">{% trans 'Datum' %}</th>
+        <th>{% trans 'Bill-Number' %}</th>
+        <th>{% trans 'Netto' %}</th>
+        <th>{% trans 'Brutto' %}</th>
+        {% if bill.member %}<th>{% trans 'Member' %}</th>{% endif %}
+     </tr></thead>
+     <tfoot id="billing_set-tfoot"><tr class="billing_set-tfoot">
+        <td class="field-date"></td>
+        <td class="field-sum"><p>{% trans 'Sum' %}</p></td>
+        <td class="field-netto"><p>{{ billings.bills.netto }}</p></td>
+        <td class="field-brutto"><p>{{ billings.bills.brutto }}</p></td>
+        {% if bill.member %}<td class="field-member"></td>{% endif %}
+     </tr></tfoot>
+     <tbody>
+{% endif %}
+     <tr class="{{ bill.storno|yesno:'storno,' }} form-row row1 has_original dynamic-billing_set" id="billing_set-0">
+        <td class="field-date"><p>{{ bill.date }}</p></td>
+        <td class="field-bill_nr">
+              <p><a href="{% url 'admin:crewdb_billing_changelist' %}{{ bill.pk }}?limit_{{ opts.model_name }}={{ object_id }}">{{ bill.bill_nr }}</a></p>
+        </td>
+        <td class="field-netto"><p>{{ bill.netto }}</p></td>
+        <td class="field-brutto"><p>{{ bill.brutto }}</p></td>
+        {% if bill.member %}<td class="field-member">
+          <p><a href="{% url 'admin:crewdb_member_changelist' %}{{ bill.member_pk }}/#billing">{{ bill.member }}</a></p>
+        </td>{% endif %}
+     </tr>
+{% if forloop.last %}
+     </tbody>
+   </table>
+</fieldset>
+{% endif %}
+{% endfor %}
+{% if not billings.finalized and has_addbill_perm %}
+<button type="submit" name="_addbill" class=" btn btn-high">{% trans 'Add Bill' %}<br />({% trans 'save'%} {{ opts.model_name }})</button>
+{% endif %}
+{% for receipt in billings.receipts.bills %}
+{% if forloop.first %}
+<fieldset class="module">
+   <h2>{% trans 'Receipts' %}</h2>
+   <table class="table table-bordered table-condensed table-striped">
+     <thead id="receipt_set-thead"><tr>
+        <th colspan="1">{% trans 'Datum' %}</th>
+        <th>{% trans 'Bill-Number' %}</th>
+        <th>{% trans 'Netto' %}</th>
+        <th>{% trans 'Brutto' %}</th>
+        {% if receipt.member %}<th>{% trans 'Member' %}</th>{% endif %}
+     </tr></thead>
+     <tfoot id="receipt_set-tfoot"><tr class="receipt_set-tfoot">
+        <td class="field-date"></td>
+        <td class="field-sum"><p>{% trans 'Sum' %}</p></td>
+        <td class="field-netto"><p>{{ billings.receipts.netto }}</p></td>
+        <td class="field-brutto"><p>{{ billings.receipts.brutto }}</p></td>
+        {% if receipt.member %}<td class="field-member"></td>{% endif %}
+     </tr></tfoot>
+     <tbody>
+{% endif %}
+     <tr class="{{ receipt.storno|yesno:'storno,' }} form-row row1 has_original dynamic-receipt_set" id="receipt_set-0">
+        <td class="field-date"><p>{{ receipt.date }}</p></td>
+        <td class="field-bill_nr">
+              <p><a href="{% url 'admin:crewdb_billing_changelist' %}{{ receipt.pk }}?limit_{{ opts.model_name }}={{ object_id }}">{{ receipt.bill_nr }}</a></p>
+        </td>
+        <td class="field-netto"><p>{{ receipt.netto }}</p></td>
+        <td class="field-brutto"><p>{{ receipt.brutto }}</p></td>
+        {% if receipt.member %}<td class="field-member">
+          <p><a href="{% url 'admin:crewdb_member_changelist' %}{{ receipt.member_pk }}/#billing">{{ receipt.member }}</a></p>
+        </td>{% endif %}
+     </tr>
+{% if forloop.last %}
+     </tbody>
+   </table>
+</fieldset>
+{% endif %}
+{% endfor %}
+{% if not billings.finalized and has_addbill_perm %}
+<button type="submit" name="_addreceipt" class=" btn btn-high">{% trans 'Add Receipt' %}<br />({% trans 'save'%} {{ opts.model_name }})</button>
+{% endif %}
+</div>

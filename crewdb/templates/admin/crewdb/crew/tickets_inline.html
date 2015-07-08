@@ -1,0 +1,40 @@
+{% load i18n %}
+{% load crewdb_extras %}
+{% load i18n admin_static admin_modify suit_tags admin_urls %}
+
+{% for ticket in tickets %}
+{% if forloop.first %}
+<div class="control-group form-row field-accounting  field-advance multi-field-row">
+  <div class="field-box">
+    <div class="control-label tickets"><label>{% trans 'Tickets / Access' %}</label></div>
+    <div class="controls">
+      <div class="multi-field-box">
+        <div class="multi-field-controls">
+   <table class="table table-condensed">
+     <thead><tr>
+        <th></th>
+        <th class="field-ticket_all">{% trans 'Tickets<br/>sum' %}</th>
+        <th class="field-ticket_available">{% trans 'Tickets<br/>available' %}</th>
+        <th class="field-lanyards_planned">{% trans 'Lanyards<br/>planned' %}</th>
+        <th class="field-members_present">{% trans 'Present<br/>(lanyard)' %}</th>
+     </tr></thead>
+     <tbody>
+{% endif %}
+     <tr class="{{ ticket.alert_class }}">
+        <td class="field-ticket_type"><p>{{ ticket.ticket_type }}</p></td>
+        <td class="field-ticket_all" ticket="{{ ticket.ticket_name }}"><p>{{ ticket.ticket_all }}</p></td>
+        <td class="field-ticket_available" ticket="{{ ticket.ticket_name }}"><p>{{ ticket.ticket_available }}</p></td>
+        <td class="field-lanyards_planned" ticket="{{ ticket.ticket_name }}"><p>{{ ticket.lanyards_planned }}</p></td>
+        <td class="field-members_present"><p>{{ ticket.members_present }}</p></td>
+     </tr>
+{% if forloop.last %}
+     </tbody>
+   </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endfor %}
+

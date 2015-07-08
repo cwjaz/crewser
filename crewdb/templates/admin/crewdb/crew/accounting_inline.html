@@ -1,0 +1,67 @@
+{% load i18n %}
+{% load crewdb_extras %}
+{% load i18n admin_static admin_modify suit_tags admin_urls %}
+
+{% if accounting.left_budget or accounting.brutto__sum or accounting.netto__sum or accounting.advances %}
+
+<div class="control-group form-row field-accounting  field-advance multi-field-row">
+  <div class="field-box">
+    <div class="control-label tickets"><label>{% trans 'Accounting' %}</label></div>
+    <div class="controls">
+      <div class="multi-field-box">
+        <div class="multi-field-controls">
+
+<table><tbody><tr class="accounting"><td>
+
+   <table class="table table-condensed">
+{% if accounting.left_budget %}
+    <tfoot id="receipt_set-tfoot"><tr class="receipt_set-tfoot {{ accounting.budget_class }}">
+        <td class="field-ticket_available"><p>{% trans 'Left Budget:' %}</p></td>
+        <td class="field-ticket_available"><p>{{ accounting.left_budget }}</p></td>
+        <td class="field-ticket_available"><p>{% trans 'Brutto' %}</p></td>
+     </tr></tfoot>
+{% endif %}
+    <tbody>
+{% if accounting.brutto__sum %}
+     <tr>
+        <td class="field-ticket_available"><p>{% trans 'Expenses:' %}</p></td>
+        <td class="field-ticket_available"><p>{{ accounting.brutto__sum }}</p></td>
+        <td class="field-ticket_available"><p>{% trans 'Brutto' %}</p></td>
+     </tr>
+{% endif %}
+{% if accounting.netto__sum %}
+     <tr>
+        <td class="field-ticket_available"><p></p></td>
+        <td class="field-ticket_available"><p>{{ accounting.netto__sum }}</p></td>
+        <td class="field-ticket_available"><p>{% trans 'Netto' %}</p></td>
+     </tr>
+{% endif %}
+     </tbody>
+   </table>
+</td><td class="advances">
+{% for advance in accounting.advances %}
+{% if forloop.first %}
+   <table class="table table-condensed">
+     <thead><tr>
+        <th class="field-ticket_all">{% trans 'Advances' %}</th>
+        <th class="field-ticket_available">{% trans 'to Member' %}</th>
+     </tr></thead>
+     <tbody>
+{% endif %}
+     <tr>
+        <td class="field-ticket_available"><p>{{ advance.amount }}</p></td>
+        <td class="field-members_present"><p><a href="{% url 'admin:crewdb_member_changelist' %}{{ advance.member_id }}/#billing">{{ advance.member }}</a></p></td>
+     </tr>
+{% if forloop.last %}
+     </tbody>
+   </table>
+{% endif %}
+{% endfor %}
+</td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+

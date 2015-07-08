@@ -1,0 +1,207 @@
+.readonly {
+  white-space: pre;
+  line-height: 120%;
+  padding: 0.7em;
+}
+#mybackbutton {
+  display: table-cell;
+  height: 30px;
+  text-align: center;
+}
+div.submit-row.clearfix {
+  padding: 5px;
+}
+
+.field-service .help-inline,
+#content .inner-right-column, #suit_form_tabs, #content .tab-content.tab-content-main {
+  display: none
+}
+#add_id_member.add-another, #add_id_vat_rate.add-another {
+  display: none;
+}
+
+span.help-block.help_noprint.hidden {
+  display: none !important;
+}
+
+div.field-member div, div.field-service div, div.field-company div, div.mark_noprint {
+  background-color: #edeff1 !important;
+}
+
+.table {
+  display: table
+}
+.table-row {
+  display: table-row
+}
+.table-cell {
+  display: table-cell
+}
+
+fieldset, 
+fieldset div {
+  background-color: #fff !important;
+  border-left: none !important;
+}
+#billing_fieldset.storno, #billing_fieldset.storno div {
+  background-color:  #fce8e8 !important;
+}
+#billing_fieldset:not(.storno) h1.stornowarning {
+  display: none
+}
+.change div.field-storno {
+  border: 1px solid black !important;
+}
+
+
+#billsAlert, #advanceAlert, #crew_advanceAlert {
+  padding-left: 0px;
+}
+
+fieldset div.alert {
+  background-color: #fcf8e3 !important;
+  margin: 3px;
+}
+
+fieldset div.alert span.message, fieldset div.alert span.comment, fieldset div.alert span.counterbalanced {
+  font-weight: normal;
+}
+fieldset div.alert span {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+fieldset div.alert span.counterbalanced label {
+  display: inline;
+  font-size: 16px;
+}
+fieldset div.alert span.counterbalanced input {
+  margin: 10px;
+}
+
+fieldset .title {
+  font-size: 20px;
+  border-bottom: 2px solid black;
+}
+fieldset .error, fieldset .error .help-block{
+  color: #b94a48 !important;
+}
+fieldset .error .controls select, fieldset .error .controls textarea, fieldset .error .controls input {
+  border-color: #b94a48;
+  color: #b94a48;
+}
+fieldset.change div.add, fieldset.change span.add, fieldset.add div.change, fieldset.add span.change,
+fieldset.receipt h3.bill, fieldset.receipt div.bill, fieldset.bill div.receipt, div.print,
+fieldset.receipt li.bill {
+  display: none !important;
+}
+
+/* ---------------- special change display for Pauschalen  -------------- */
+fieldset.lump-sum.change .field-bill_nr, fieldset.lump-sum.change .field-netto,
+fieldset.lump-sum.change .field-vat_rate_local, fieldset.lump-sum.change .field-vat,
+fieldset.lump-sum.change .field-brutto .control-label span {
+  display: none !important;
+}
+
+/* ---------------- special change display for reverse_charge  -------------- */
+fieldset.change:not(.reverse_charge) .field-reverse_charge, fieldset.reverse_charge.change .field-vat_rate,
+fieldset.reverse_charge.change .field-vat_rate_local, fieldset.reverse_charge.change .field-vat,
+fieldset.reverse_charge.change .field-brutto {
+  display: none !important;
+}
+
+/* ---------------- semmi invoice fixes  -------------- */
+/* tables ueber volle breite */
+#billing_fieldset>div.control-group { 
+	display:table;
+	width:90%;/* seitenraender */
+	margin-left:2em;
+}
+#billing_fieldset>div>div>div {
+	display:table;
+	width:100%;
+}
+.field-brutto .table-row div, .field-netto .table-row div, .field-vat .table-row div {
+  min-width:50px;
+  text-align: right;
+}
+.field-vat .table-row div {
+  border-bottom: 1px solid black;
+}
+.field-brutto .table-row div.change {
+  border-bottom: 3px double black;
+}
+
+
+/* allgemein die min-width entfernen */
+/*#billing_fieldset div.control-label {
+	min-width:0;
+}*/
+
+
+/* oben links und oben rechts */
+/*
+#billing_fieldset>div>div>div:first-child>div>div>div>div:first-child {
+	width:40%;
+}
+#billing_fieldset>div>div>div:first-child>div>div>div>div:last-child {
+	width:60%;
+} */
+
+/* unten (rechnung) */
+#billing_fieldset>div>div>div:last-child>div>div>div:first-child {
+	display:table-caption;  /*span over 2 cols */
+}
+
+.field-footer1 div {
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+.field-footer2 div {
+  border-bottom: 1px dashed black;
+}
+
+.field-footer1 div, .field-footer2 div, .field-footer3 div {
+/*   text-align: right; */
+}
+
+#billing_fieldset>div>div>div:last-child>div>div>div:first-child>div {
+	/*text-align:center;*/ /* <-- zentriert Rechnung */
+	
+	 /* Abstand zum Unterstrich */
+	/*margin-right:3em;
+	margin-left:3em;*/
+	padding-bottom:0.3em;
+}
+@media print {
+	#billing_fieldset>div.control-group { 
+		width:100%;/* seitenraender full size */
+		margin-left:0;
+	}
+	/*
+	#billing_fieldset>div>div>div:first-child>div>div>div>div:first-child {
+		padding-left:0;
+	}
+	
+	#billing_fieldset>div>div>div:last-child>div>div>div:first-child>div {
+		margin-left:0;
+	}
+	*/
+}
+/* ------------- end semmi fixes --------------------- */
+
+@media print {
+  body {
+    padding: 50px;
+	height:90%; /* dirty fix to print 1 page only */
+	min-width:0;
+  }
+  div.inner-center-column { /* content area full width */
+    margin-right:0px;
+  }
+  li, ul.breadcrumb, #suit_form_tabs, .inner-right-column, div.noprint, span.noprint, .mark_noprint {
+    display: none !important;
+  }
+  div.print.table-row {
+    display: table-row !important;
+  }
+}

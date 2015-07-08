@@ -1,0 +1,397 @@
+{% load admin_static %}{% load suit_tags %}{% load url from future %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{% block title %}{{ title }} | {{ 'ADMIN_NAME'|suit_conf }}{% endblock %}</title>
+  <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% endblock %}"/>
+  <link rel="stylesheet" type="text/css" href="{% static 'suit/bootstrap/css/bootstrap.min.css' %}" media="all"/>
+  <link rel="stylesheet" type="text/css" href="{% static 'suit/css/suit.css' %}" media="all">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/semmi_stripped.css' %}" media="all">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/clippy.css' %}" media="all" />
+  {% block extrastyle %}{% endblock %}
+  {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}"/>{% endif %}
+  <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
+  <script src="{% static 'suit/js/jquery-1.8.3.min.js' %}"></script>
+  <script type="text/javascript">var Suit = { $: $.noConflict() }; if (!$) $ = Suit.$; </script>
+  <script src="{% static 'suit/bootstrap/js/bootstrap.min.js' %}"></script>
+  {% if 'SHOW_REQUIRED_ASTERISK'|suit_conf %}
+  <style type="text/css">.required:after { content: '*'; margin: 0 0 0 5px; position: absolute; color: #ccc;}</style>
+  {% endif %}
+  {% block extrahead %}{% endblock %}
+  {% block blockbots %}
+    <meta name="robots" content="NONE,NOARCHIVE"/>{% endblock %}
+</head>
+{% load i18n %}
+
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+
+<!-- Sticky footer wrap -->
+<div id="wrap">
+
+<!-- cw logo start -->
+<script type="text/javascript">
+var colors = new Array( [110,255,110], [255,35,98], [62,135,255], [45,175,230], [255,255,0], [255,128,0] );
+var step = 0;
+var colorIndices = [0,1,2,3];
+var gradientSpeed, gradientSpeedChanging;
+var logoInterval;
+var isMoving = false;
+
+$(document).ready( function() {
+	$('#cwlogo a').css({
+		'outline':'0'
+	});
+	
+	$('#cwlogo').css({
+		/*'position':'absolute',*/
+		'height':'108px',
+		'width':'150px',
+		'float':'left',
+		/*'bottom':'62px',*/
+		'margin-top':'-117px',
+		/*'left':'25px',*/
+		'margin-left':'24px',
+		'background':'#fff',
+		'overflow':'hidden'
+	})
+	.mouseover(function () {
+		if (isMoving) return;
+		gradientSpeed = 0.07;
+		gradientSpeedChanging = -0.001;
+		logoInterval = setInterval(updateGradient,60);
+	})
+	.mouseout( function () {
+		if (isMoving) return;
+		clearInterval(logoInterval);
+		$(this).stop().animate({'margin-top':'-117px', 'opacity':'1'},{
+			'progress' : function(e, p) {
+				var color1 = "rgb("+Math.floor(r1+(255-r1)*p)+","+Math.floor(g1+(255-g1)*p)+","+Math.floor(b1+(255-b1)*p)+")";
+				var color2 = "rgb("+Math.floor(r2+(255-r2)*p)+","+Math.floor(g2+(255-g2)*p)+","+Math.floor(b2+(255-b2)*p)+")";
+				$('#cwlogo').css( "background-color", color1); //fallback
+				$('#cwlogo').css( "background", "linear-gradient(to top, "+color1+" 0%, "+color2+" 100%)");
+			}
+		});
+	})
+	.click(function(event) { // abtauchen
+		isMoving = true;
+		event.preventDefault();
+		clearInterval(logoInterval);
+		$('#footer .tools').hide();
+		window.open($('#cwlogo a').attr("href"));
+		$(this).css( {'margin-top':'-47px', 'opacity':'0'} );
+		//$('#cwlogo img').css( {'width':'150px', 'height':'47px'} );
+		setTimeout( "$(document).mousemove(function () {"
+		           +"   $(this).off('mousemove');" // auftauchen
+		           +"   logoInterval = setInterval(updateGradient,60);"
+		           +"   $('#cwlogo').animate( {'margin-top':'-117px', 'opacity':'1'}, { 'duration':600, 'queue':false, 'complete': function() {clearInterval(logoInterval);$('#footer .tools').fadeIn();isMoving=false;}  });"
+		           //+"   $('#cwlogo img').animate( {'height':'108px'}, { 'duration':800, 'queue':false, 'complete': function() {clearInterval(logoInterval);}  });"
+		           +"});"
+				   ,1000 );
+	});
+  try {
+    mailto = $("a[href^='mailto:']").attr('href');
+    $("a[href^='mailto:']").attr('href',mailto.replace(/_\[\at\]\_/gi,"@"));
+    email = $('.mail').html();
+    $('.mail').html(email.replace(/_\[\at\]\_/gi,"@"));
+  } catch(e) {}
+});
+
+
+var r1,g1,b1,r2,g2,b2;
+
+function updateGradient() 
+{	// original from here: http://codepen.io/quasimondo/pen/lDdrF
+	var c0_0 = colors[colorIndices[0]];
+	var c0_1 = colors[colorIndices[1]];
+	var c1_0 = colors[colorIndices[2]];
+	var c1_1 = colors[colorIndices[3]];
+
+	var istep = 1 - step;
+	r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);
+	g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);
+	b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);
+	var color1 = "rgb("+r1+","+g1+","+b1+")";
+
+	r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);
+	g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);
+	b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
+	var color2 = "rgb("+r2+","+g2+","+b2+")";
+
+	$('#cwlogo').css( "background-color", color1); //fallback
+	
+	//$('#cwlogo').css( "background", "-webkit-linear-gradient("+color1+","+color2+")");
+	//$('#cwlogo').css( "background", "-moz-linear-gradient("+color1+","+color2+")");
+	//$('#cwlogo').css( "background", "linear-gradient(to top, "+color1+" 0%, "+color2+" 100%)");
+	$('#cwlogo').css( "background", "linear-gradient("+color1+","+color2+")");
+  
+	step += gradientSpeed;
+	if ( step >= 1 ) {
+		step %= 1;
+		colorIndices[0] = colorIndices[1];
+		colorIndices[2] = colorIndices[3];
+		colorIndices[1] = ( colorIndices[1] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
+		colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
+	}
+	
+	// semmis variable gradientSpeed
+	gradientSpeed = Math.max(0.005, Math.min(0.1, gradientSpeed + gradientSpeedChanging));
+	if (Math.random()<0.05) gradientSpeedChanging = Math.random()*0.006 * -(Math.abs(gradientSpeedChanging)/gradientSpeedChanging);
+	//console.log(gradientSpeedChanging);
+}
+</script>
+<!-- Init script -->
+<script type="text/javascript">
+    var miliseconds_per_minute = 60000
+    var show_after_minutes = 0
+    var show_for_minutes = 2
+    var show_every_minutes = 10
+
+    function play_clippy() {
+      clippy_agent.play("Idle1_1")
+      clippy_agent.play("GetAttention")
+      clippy_agent.speak("Na, nix los hier?")
+      clippy_agent.play("Idle1_1")
+      clippy_agent.closeBalloon()
+      clippy_agent.play("Idle1_1")
+      clippy_agent.play("Idle1_1")
+      clippy_agent.speak("Oder keine Lust mehr?")
+      clippy_agent.play("Idle1_1")
+      clippy_agent.play("Idle1_1")
+      clippy_agent.speak("Hör doch etwas Musik!")
+      clippy_agent.closeBalloon()
+      clippy_agent.play("Hearing_1")
+      clippy_agent.speak("Oder bist Du etwa eingeschlafen?")
+      clippy_agent.play("GetAttention")
+      clippy_agent.play("LookUpRight")
+      clippy_agent.play("LookUpRight")
+      clippy_agent.play("Idle1_1")
+      clippy_agent.play("Idle1_1")
+      clippy_agent.play("LookUpRight")
+      clippy_agent.play("Idle1_1")
+      clippy_agent.play("Writing")
+      clippy_agent.play("Idle1_1")
+      clippy_agent.play("LookUpRight")
+      clippy_agent.play("Idle1_1")
+      clippy_agent.play("Writing")
+      clippy_agent.play("Idle1_1")
+      clippy_agent.play("Idle1_1")
+      clippy_agent.speak("Ok, is alles notiert!")
+      clippy_agent.play("Idle1_1")
+      setTimeout(hide_clippy, show_for_minutes * miliseconds_per_minute)
+    }
+
+    function hide_clippy() {
+      clippy_agent.hide()
+      if (show_every_minutes != 0) {
+        setTimeout(play_clippy, show_every_minutes * miliseconds_per_minute)
+      }
+    }
+
+    clippy_agent = null;
+
+    if (show_after_minutes != 0) {
+      setTimeout(function(){
+        jQuery.getScript("{% static 'js/clippy.min.js' %}", function() {
+          clippy.load('Clippy', function(agent) {
+          clippy_agent = agent
+          clippy_agent.moveTo($(window).width() - 130, $(window).height() - 170);
+          clippy_agent.show();
+          play_clippy()
+        })
+      })},show_after_minutes * miliseconds_per_minute)
+    }
+</script>
+  <!-- Container -->
+  {% block container %}
+    <div id="container">
+
+      {% block header %}
+        {% if not is_popup %}
+          <!-- Header -->
+          <div id="header" class="header">
+            <div id="branding">
+              <a href="{% url 'admin:index' %}"><h1 id="site-name">{% block branding %}{{ 'ADMIN_NAME'|suit_conf }}{% endblock %}</h1></a>
+            </div>
+
+            {% block header_time %}
+            <div class="header-content header-content-first">
+              <div class="header-column icon">
+                <i class="icon-time"></i>
+              </div>
+              <div class="header-column">
+                <span class="date"> {% suit_date %}</span><br>
+                <span class="time" id="clock">{% suit_time %}</span>
+              </div>
+            </div>
+            {% endblock %}
+
+            {% block header_content %}
+              <!--<div class="header-content">
+                <div class="header-column icon">
+                  <i class="icon-comment"></i>
+                </div>
+                <div class="header-column">
+                  <a href="" class="grey"><b>2</b> new messages</a>
+                </div>
+              </div>-->
+            {% endblock %}
+
+            {% if user.is_active and user.is_staff %}
+              <div id="user-tools">
+                {% trans 'Welcome,' %}
+                <strong>
+                  {% filter force_escape %}
+                    {% firstof user.first_name user.username %}{% endfilter %}</strong>.
+                <span class="user-links">
+                {% block userlinks %}
+                  {% url 'django-admindocs-docroot' as docsroot %}
+                  {% if docsroot %}
+                    <a href="{{ docsroot }}">{% trans 'Documentation' %}</a>
+                   <span class="separator">|</span>
+                  {% endif %}
+                  <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a>
+                  <span class="separator">|</span>
+                  <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+                  </span>
+                {% endblock %}
+              </div>
+            {% endif %}
+            {% block nav-global %}{% endblock %}
+          </div>
+        {% endif %}
+        <!-- END Header -->
+      {% endblock %}
+
+
+      <div class="suit-columns {{ is_popup|yesno:'one-column,two-columns' }}">
+
+        {% block content-center %}
+          <div id="suit-center" class="suit-column">
+
+            {% if not is_popup %}
+              {% block breadcrumbs %}
+                <ul class="breadcrumb">
+                  <li><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+                    {% if title %}
+                      <span class="divider">&raquo;</span>
+                      </li>
+                      <li class="active">
+                      {{ title }}
+                    {% endif %}
+                    </li>
+                </ul>
+              {% endblock %}
+            {% endif %}
+
+            {% block messages %}
+              {% if messages %}
+
+                {% for message in messages %}
+                  <div class="alert alert-{% firstof message.tags 'info' %}">
+                    <button class="close" data-dismiss="alert">×</button>
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endblock messages %}
+
+            <!-- Content -->
+            <div id="content" class="{% block coltype %}colM{% endblock %} row-fluid">
+              {% block pretitle %}{% endblock %}
+              {% block content_title %}{% if title %}
+                <h2 class="content-title">{{ title }}</h2>
+              {% endif %}{% endblock %}
+              {% block content %}
+                {% block object-tools %}{% endblock %}
+                {{ content }}
+              {% endblock %}
+              {% block sidebar_content %}
+                {% block sidebar %}{% endblock %}
+              {% endblock %}
+            </div>
+            <!-- END Content -->
+          </div>
+        {% endblock %}
+
+
+        {% block content-left %}
+          {% if not is_popup %}
+            <div id="suit-left" class="suit-column">
+              {% block quick-search %}
+                {% with 'SEARCH_URL'|suit_conf as search_url %}
+                  {% if search_url %}
+                    <form class="form-search nav-quick-search" autocomplete="off" action="{% if '/' in search_url %}{{ search_url }}{% else %}{% url search_url %}{% endif %}" method="GET">
+                      <input type="text" name="q" class="input-medium search-query" id="quick-search">
+                      <i class="input-icon icon-search"></i>
+                      <input type="submit" class="submit" value="">
+                    </form>
+                  {% endif %}
+                {% endwith %}
+              {% endblock %}
+
+              {% include 'suit/menu.html' %}
+
+            </div>
+          {% endif %}
+        {% endblock %}
+
+      </div>
+    </div>
+  {% endblock %}
+
+  {% if not is_popup %}
+  <!-- Sticky footer push -->
+  <div id="push"></div>
+  {% endif %}
+
+</div>
+
+{% block footer %}
+  {% if not is_popup %}
+
+  <div id="footer" class="footer">
+  
+    <div class="content">
+{% if user.is_authenticated %}
+	  
+	  <!-- cw logo -->
+	  <div id="cwlogo"><a href="http://cwjaz.github.io/crewser/" target="_blank"><div><img alt="Computerwerkstatt JAZ" src="{% static 'img/cw_logo_masked.png' %}" /></div></a></div>
+
+      <div class="tools">
+        {% block footer_links %}
+          {% trans 'developed with' %} <a href="https://fsfe.org">{% trans 'Free Software' %}</a><br>
+          <a href="mailto:crewser_issue_[at]_absorb.it?subject=Issue%20with%20Crewser" class="icon"><i class="icon-comment"></i>{% trans 'report a problem' %}</a>
+        {% endblock %}
+      </div>
+
+{% if suit_is_licensed %}
+      <div class="copyright">
+          {% trans 'thanks to' %} <a href="https://www.djangoproject.com" target="_blank">Django Framework</a> {% trans 'developers' %}<br>
+          {% trans 'thanks to' %} <a href="http://djangosuit.com" target="_blank">DjangoSuit</a> {% trans 'developers' %}
+      </div>
+
+      <div class="branding">
+{% if crewser_is_licensed %}
+        <h1>Crewser 2015</h1>
+{% else %}
+        <h3 class="license">{% trans 'Free for events with less than 200 Members' %}</h3>
+{% endif %}
+      </div>
+{% else %}
+      <div class="copyright {{ suit_is_licensed|yesno:',suit_not_licensed' }}">
+        {% block copyright %}
+          Admin Theme free for Non-Commercial use<br>Theme developed by <a href="http://djangosuit.com" target="_blank">DjangoSuit.com</a>
+        {% endblock %}
+      </div>
+{% endif %}
+{% endif %}
+    </div>
+  </div>
+  {% endif %}
+{% endblock %}
+
+  <script src="{% static 'suit/js/suit.js' %}"></script>
+  {% block extrajs %}{% endblock %}
+
+</body>
+</html>

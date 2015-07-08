@@ -1,0 +1,762 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+{% block after_related_objects %}
+
+<h1 id="javascript-warning" class="alert alert-error">{% trans 'You have to enable Javascript to use this site!' %}</h1>
+<a id="mybackbutton" class="btn btn-high" style="display:none"></a>
+
+<script type="text/javascript">
+DEBUG = false
+
+$(document).ready(function() {
+
+//----------------------------------------------------------------------------------------------------
+//--onchange triggers to update different related fields ---------------------------------------------
+
+{% if add %}
+
+  $('#id_reverse_charge').change(function () {
+    if ($('#id_reverse_charge').attr("checked")) {
+      $('.field-vat_rate .control-label').addClass("mark_noprint")
+      $('.field-vat_rate .controls').addClass("mark_noprint")
+      $('.field-vat_rate .help_noprint').removeClass("hidden")
+      $('.field-brutto .table-cell').addClass("mark_noprint")
+      $('.field-brutto .control-label').addClass("mark_noprint")
+      $('.field-brutto .controls').addClass("mark_noprint")
+      $('.field-brutto .help_noprint').removeClass("hidden")
+      $('#id_vat_rate li').each(function () {
+        special_text = /(\()(.*)(\))/.exec($(this).text())
+        if (special_text) {
+          $(this).css("display", "none")
+        }
+      })
+    } else {
+      $('.field-vat_rate .control-label').removeClass("mark_noprint")
+      $('.field-vat_rate .controls').removeClass("mark_noprint")
+      $('.field-vat_rate .help_noprint').addClass("hidden")
+      $('.field-brutto .table-cell').removeClass("mark_noprint")
+      $('.field-brutto .control-label').removeClass("mark_noprint")
+      $('.field-brutto .controls').removeClass("mark_noprint")
+      $('.field-brutto .help_noprint').addClass("hidden")
+      $('#id_vat_rate li').each(function () {
+        special_text = /(\()(.*)(\))/.exec($(this).text())
+        if (special_text) {
+          $(this).css("display", "")
+        }
+      })
+    }
+  })
+
+  //-----------------------------------------------------------
+  // update local member-related fields on member change
+  $("#id_member").change(function () {
+    // if we are not adding a bill don't auto-update any fields
+    if (!/add\/$/.test(window.location.pathname)) return
+    DEBUG && console.log("id_member change #id_receipt="+$("#id_receipt").prop("checked"))
+
+    //  update id_member_local with member:crew - name as mentioned in dropbox
+    $("#id_member_local").val($("#id_member option[value=" + $("#id_member").val() + "]").text())
+
+    if (!$("#id_receipt").prop("checked")) {
+      $('#billsAlert').remove();
+      $('#advanceAlert').remove();
+      $('#crew_advanceAlert').remove();
+
+      DEBUG && console.log("id_member change ajax request")
+      $.get('/crewdb/member_data', {member_id: $(this).val()}, function(data){
+        if (!back_after_errors) {
+          contact = data.name
+          if (data.address) contact += "\n" + data.address
+          if (data.phone) contact += "\nPhone: " + data.phone
+          if (data.email) contact += "\nEMail: " + data.email
+          if (id_invoicing_party_untouched ||
+            confirm("{% trans 'Update Invoicing Party with new Member data?' %}")) {
+              $("#id_invoicing_party").val(contact).trigger('autosize');
+              id_invoicing_party_untouched = true
+          }
+          if (data.worktimes) {
+            var netto = 0;
+            var result = "";
+            var unknown_values = "";
+            for (var i in data.worktimes) {
+              for (var j in data.worktimes[i]) {
+                var time = data.worktimes[i][j];
+                result += time.from + " - " + time.to + ": " + time.days + "Tage a 8h * " + time.fee + "€/Tag\n";
+                var value = parseFloat(time.days*time.fee)
+                if (!isNaN(value)) netto += value;
+                else unknown_values = " + XX"
+              }
+            }
+            if (id_comment_untouched ||
+              confirm("{% trans 'Update Comment with new Member data?' %}")) {
+                $("#id_comment").val(result).trigger('autosize');
+                id_comment_untouched = true
+            }
+            if (id_netto_untouched ||
+              confirm("{% trans 'Update Netto with new Member data?' %}")) {
+                $("#id_netto").val(netto + unknown_values)
+                netto_to_brutto()
+                id_netto_untouched = true
+            }
+          }
+        }
+        if (data.bills) {
+          var bill_h3 = document.createElement('h3');
+          bill_h3.id = "billsAlert";
+          bill_h3.className = "bill";
+          for (var i in data.bills) {
+            var bill_div = document.createElement('div');
+            bill_div.className = "alert noprint";
+            jQuery(bill_h3).append(bill_div);
+            var span_message = document.createElement('span');
+            span_message.className = "message";
+            span_message.innerHTML = data.bills[i].message;
+            jQuery(bill_div).append(span_message);
+            var span_amount = document.createElement('span');
+            span_amount.className = "amount";
+            span_amount.innerHTML = data.bills[i].amount;
+            jQuery(bill_div).append(span_amount);
+            var span_storno = document.createElement('span');
+            span_storno.className = "counterbalanced";
+            var advance_checkbox_label = document.createElement('label');
+            jQuery(advance_checkbox_label).text("{% trans 'Storno' %}:");
+            jQuery(span_storno).append(advance_checkbox_label);
+            var advance_checkbox = document.createElement('input');
+            advance_checkbox.type = 'checkbox';
+            advance_checkbox.id = 'id_storno';
+            advance_checkbox.name = 'storno_' + data.bills[i].id;
+            jQuery(span_storno).append(advance_checkbox);
+            jQuery(bill_div).append(span_storno);
+          }
+          $("#billing_fieldset").prepend(bill_h3);
+        }
+        if (data.advance) {
+          var advance_h3 = document.createElement('h3');
+          advance_h3.id = "advanceAlert";
+          advance_h3.className = "bill";
+          for (var i in data.advance) {
+            var advance_div = document.createElement('div');
+            advance_div.className = "alert";
+            jQuery(advance_h3).append(advance_div);
+            var span_message = document.createElement('span');
+            span_message.className = "message";
+            span_message.innerHTML = data.advance[i].message;
+            jQuery(advance_div).append(span_message);
+            var span_amount = document.createElement('span');
+            span_amount.className = "amount";
+            span_amount.innerHTML = data.advance[i].amount;
+            jQuery(advance_div).append(span_amount);
+            if ('comment' in data.advance[i]) {
+              var span_comment = document.createElement('span');
+              span_comment.className = "comment";
+              span_comment.innerHTML = data.advance[i].comment;
+              jQuery(advance_div).append(span_comment);
+            }
+            var span_counterbalanced = document.createElement('span');
+            span_counterbalanced.className = "counterbalanced";
+            var advance_checkbox_label = document.createElement('label');
+            jQuery(advance_checkbox_label).text("{% trans 'Counterbalanced' %}:");
+            jQuery(span_counterbalanced).append(advance_checkbox_label);
+            var advance_checkbox = document.createElement('input');
+            advance_checkbox.type = 'checkbox';
+            advance_checkbox.id = 'id_counterbalanced';
+            advance_checkbox.name = 'counterbalanced_' + data.advance[i].id;
+            jQuery(span_counterbalanced).append(advance_checkbox);
+            jQuery(advance_div).append(span_counterbalanced);
+          }
+          $("#billing_fieldset").prepend(advance_h3);
+        }
+        if (data.crew_advance) {
+          var crew_advance_h3 = document.createElement('h3');
+          crew_advance_h3.id = "crew_advanceAlert";
+          crew_advance_h3.className = "bill";
+          for (var i in data.crew_advance) {
+            var advance_div = document.createElement('div');
+            advance_div.className = "alert";
+            jQuery(crew_advance_h3).append(advance_div);
+            var span_message = document.createElement('span');
+            span_message.className = "message";
+            span_message.innerHTML = data.crew_advance[i].message;
+            jQuery(advance_div).append(span_message);
+            var span_amount = document.createElement('span');
+            span_amount.className = "amount";
+            span_amount.innerHTML = data.crew_advance[i].amount;
+            jQuery(advance_div).append(span_amount);
+            if ('comment' in data.crew_advance[i]) {
+              var span_comment = document.createElement('span');
+              span_comment.className = "comment";
+              span_comment.innerHTML = data.crew_advance[i].comment;
+              jQuery(advance_div).append(span_comment);
+            }
+            var span_counterbalanced = document.createElement('span');
+            span_counterbalanced.className = "counterbalanced";
+            var advance_checkbox_label = document.createElement('label');
+            jQuery(advance_checkbox_label).text("{% trans 'Counterbalanced' %}:");
+            jQuery(span_counterbalanced).append(advance_checkbox_label);
+            var advance_checkbox = document.createElement('input');
+            advance_checkbox.type = 'checkbox';
+            advance_checkbox.id = 'id_counterbalanced';
+            advance_checkbox.name = 'counterbalanced_' + data.crew_advance[i].id;
+            jQuery(span_counterbalanced).append(advance_checkbox);
+            jQuery(advance_div).append(span_counterbalanced);
+          }
+          $("#billing_fieldset").prepend(crew_advance_h3);
+        }
+      back_after_errors = false
+      });
+    }
+    else {
+      back_after_errors = false
+    }
+  });
+
+  //-----------------------------------------------------------
+  // update local company-related fields on member change
+  $("#id_company").change(function () {
+    // if we are not adding a bill don't auto-update any fields
+    if (!/add\/$/.test(window.location.pathname)) return
+    DEBUG && console.log("id_company change")
+
+    if ($("#id_receipt").prop("checked")) {
+      DEBUG && console.log("id_company change ajax request")
+      $.get('/crewdb/company_data', {company_id: $(this).val()}, function(data){
+        contact = data.name
+        if (data.address) contact += "\n" + data.address
+        if (data.phone) contact += "\nPhone: " + data.phone
+        if (data.email) contact += "\nEMail: " + data.email
+        if (id_invoicing_party_untouched ||
+          confirm("{% trans 'Update Invoicing Party with new Company data?' %}")) {
+            $("#id_invoicing_party").val(contact).trigger('autosize');
+            id_invoicing_party_untouched = true
+        }
+      });
+    }
+  });
+
+  //-----------------------------------------------------------
+  // update netto or brutto (bill or receipt) on vat_rate change
+  $('#id_vat_rate').change(function() {
+    DEBUG && console.log("id_vat_rate change")
+    if ($("#id_receipt").prop("checked")) {
+      brutto_to_netto()
+    } else {
+      netto_to_brutto()
+      special_bill_modifications()
+    }
+  });
+
+  //-----------------------------------------------------------
+  // rememberany manual change of id_invoicing_party field
+  // if manually changed, override will trigger confirmation dialog
+  $("#id_invoicing_party").change(function () {
+    DEBUG && console.log("id_invoicing_party manually modified")
+    id_invoicing_party_untouched = false
+  });
+
+  //-----------------------------------------------------------
+  // rememberany manual change of comment field
+  // if manually changed, override will trigger confirmation dialog
+  $("#id_comment").change(function () {
+    DEBUG && console.log("id_comment manually modified")
+    id_comment_untouched = false
+  });
+
+  //-----------------------------------------------------------
+  // rememberany manual change of service_free field
+  // if manually changed, override will trigger confirmation dialog
+  $("#id_service_free").change(function () {
+    DEBUG && console.log("id_service_free manually modified")
+    id_service_free_untouched = false
+  });
+
+  //-----------------------------------------------------------
+  // rememberany manual change of netto field
+  // if manually changed, override will trigger confirmation dialog
+  // update brutto based on netto changes
+  $('#id_netto').change(function() {
+    $(this).val($(this).val().replace(",","."))
+    netto_to_brutto()
+    id_netto_untouched = false
+  });
+
+  //-----------------------------------------------------------
+  // update netto based on brutto changes
+  $('#id_brutto').change(function() {
+    $(this).val($(this).val().replace(",","."))
+    brutto_to_netto()
+  });
+
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------
+//--onclick triggers to update and show/hide fields of different tabs --------------------------------
+
+  //-----------------------------------------------------------
+  // bill-tab clicked
+  $("#suit_form_tabs a[href='#bill']").click(function () {
+    DEBUG && console.log("#bill click")
+    toggle_bill_receipt("#bill")
+    mark_all_fields_untouched()
+    if (!back_after_errors) {
+      trigger_all_changes()
+    } else
+      $("#id_member").trigger('change')
+      $('#id_vat_rate').trigger('change')
+  });
+
+  //-----------------------------------------------------------
+  // receipt-tab clicked
+  $("#suit_form_tabs a[href='#receipt']").click(function () {
+    // if we just returned after a save-error we dont update anything
+    DEBUG && console.log("#receipt click")
+    toggle_bill_receipt("#receipt")
+    mark_all_fields_untouched()
+    if (!back_after_errors) {
+      trigger_all_changes()
+    } else
+      $("#id_member").trigger('change')
+      $('#id_vat_rate').trigger('change')
+  });
+
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------
+//--further patches for missing triggers -------------------------------------------------------------
+
+  //-----------------------------------------------------------
+  // monkey-patch SelectBox.add_to_cache
+  // this will copy all selected Services to editable Services Field
+  DEBUG && console.log("monkey-patch SelectBox.add_to_cache")
+
+  function update_service_free(id, option) {
+    DEBUG && console.log("running patched SelectBox.add_to/delete_from_cache " + id)
+    if (!$("#id_receipt").prop("checked")) {
+      var all_services = ""
+      for (var service in SelectBox.cache[id]) {
+        text = /(.+)( \()(.*)(\))/.exec(SelectBox.cache[id][service].text)
+        DEBUG && console.log(text)
+        if (text) {
+          all_services += text[1] + "\n"
+        }
+        else {
+          all_services += SelectBox.cache[id][service].text + "\n"
+        }
+      }
+      if (back_after_errors_prevent_service_update > 0)
+        back_after_errors_prevent_service_update -= 1
+      else if (id_service_free_untouched ||
+          confirm("{% trans 'Update Service with new Service data?' %}")) {
+        $('#id_service_free').val(all_services).trigger('autosize');
+        id_service_free_untouched = true
+      }
+    }
+  }
+
+  orig_add_to_cache = SelectBox.add_to_cache
+  SelectBox.add_to_cache = function(id, option) {
+    orig_add_to_cache(id, option)
+    if (id == "id_service_to") update_service_free(id, option);
+  }
+  orig_delete_from_cache = SelectBox.delete_from_cache
+  SelectBox.delete_from_cache = function(id, option) {
+    orig_delete_from_cache(id, option)
+    if (id == "id_service_to") update_service_free(id, option);
+  }
+
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------
+//--functions -------------------------------------------------------------
+
+  function mark_all_fields_untouched() {
+    id_invoicing_party_untouched = {{ errors|yesno:'false,true' }}
+    id_comment_untouched = {{ errors|yesno:'false,true' }}
+    id_netto_untouched = {{ errors|yesno:'false,true' }}
+    id_service_free_untouched = {{ errors|yesno:'false,true' }}
+  }
+
+  function trigger_all_changes() {
+    $('#id_vat_rate').trigger('change')
+    $("#id_company").trigger('change')
+    $("#id_member").trigger('change')
+  }
+
+  // calculations
+  function netto_to_brutto() {
+    DEBUG && console.log("netto_to_brutto")
+    var vat = parseFloat($('#id_vat_rate input[type="radio"]:checked').parent().text())
+    if (!isNaN(vat)) {
+      $('#id_brutto').val(Math.ceil($('#id_netto').val() * (1 + vat / 100) * 100)/100)
+    }
+  }
+  function brutto_to_netto() {
+    DEBUG && console.log("brutto_to_netto")
+    var vat = parseFloat($('#id_vat_rate input[type="radio"]:checked').parent().text())
+    if (!isNaN(vat)) {
+      $('#id_netto').val(Math.ceil($('#id_brutto').val() / (1 + vat / 100) * 100)/100)
+    }
+  }
+
+  // store bill_nr which is hidden if flipped to receipt
+  var bill_nr = $("#id_bill_nr").val()
+  // adapt field-display depending on bill or receipt choice
+  function toggle_bill_receipt(newactive) {
+    DEBUG && console.log("toggle_bill_receipt newactive=" + newactive)
+    if (newactive == '#bill') {
+      if (back_after_errors) {
+        $('.field-brutto').removeClass("error")
+        $('.field-brutto .help-block').css('display', 'none')
+      }
+      $("#id_bill_nr").val(bill_nr)
+      $("#id_receipt").prop("checked", false)
+      $('#id_netto').removeAttr('readonly')
+      $('#id_brutto').attr('readonly', 'true')
+      $('#billing_fieldset').removeClass('receipt').addClass('bill')
+    }
+    else {
+      if (back_after_errors) {
+        $('.field-netto').removeClass("error")
+        $('.field-netto .help-block').css('display', 'none')
+      }
+      else {
+        bill_nr = $("#id_bill_nr").val()
+        $("#id_bill_nr, #id_invoicing_party, #id_comment, #id_netto").val("")
+      }
+      $("#id_receipt").prop("checked", true)
+      $('#id_netto').attr('readonly', 'true')
+      $('#id_brutto').removeAttr('readonly')
+      $('#billing_fieldset').removeClass('bill').addClass('receipt')
+    }
+    DEBUG && console.log("toggle_bill_receipt done. #id_receipt=" + $("#id_receipt").prop("checked"))
+  }
+{% endif %}
+
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------
+//--functions -------------------------------------------------------------
+
+  // if user tried to save the form and was sent back with some errors, all related fields
+  // (member, company and vat_tax) trigger a change - the reception has to be blocked
+  back_after_errors = ("{{ errors|addslashes }}")
+  back_after_errors_prevent_service_update = 0
+  if (back_after_errors)
+    back_after_errors_prevent_service_update =
+      eval("{{ adminform.form.service.value }}".replace(/&#39;/g, '"')).length
+
+  DEBUG && console.log("back_after_errors: " + back_after_errors)
+
+  $('button[name="_continue"]').remove()
+  $('button[name="_addanother"]').remove()
+  {% if add %}
+      $('#suit_form_tabs').css('display','block')
+      $('#id_reverse_charge').trigger('change')
+  {% endif %}
+
+// override css if javascript is available (else error is shown)
+  $('#content .inner-right-column').css('display', "block")
+  $('#content .tab-content.tab-content-main').css('display', "block")
+  $('#javascript-warning').css('display', "none")
+
+// add special button to allow going back to member/crew
+  $('div .submit-row').append($('#mybackbutton'))
+
+  if ("{{ request.GET.limit_member }}") {
+    $('#mybackbutton').attr('href',"{% url 'admin:crewdb_member_changelist' %}{{ request.GET.limit_member }}/#billing").text("{% trans 'Back to Member' %}").css("display","")
+    if ("{{ request.GET.print }}") $('#mybackbutton').addClass("btn-info")
+  }
+
+  if ("{{ request.GET.limit_crew }}") {
+    $('#mybackbutton').attr('href',"{% url 'admin:crewdb_crew_changelist' %}{{ request.GET.limit_crew }}/#billing").text("{% trans 'Back to Crew' %}").css("display","")
+    if ("{{ request.GET.print }}") $('#mybackbutton').addClass("btn-info")
+  }
+
+//   directly after a bill was saved it should be printed!
+  if ("{{ request.GET.print }}") {
+    window.print()
+  }
+
+  DEBUG && console.log("{{ adminform.form.instance.counterbalanced_1 }}")
+
+  function special_bill_modifications() {
+      DEBUG && console.log($('#id_vat_rate input[type="radio"]:checked').parent().text())
+      text = /(\()(.*)(\))/.exec($('#id_vat_rate input[type="radio"]:checked').parent().text())
+      if (text) {
+        DEBUG && console.log(text[2])
+        $('.bill.title').text(text[2])
+        {% if add %}
+        $('#id_reverse_charge').attr("disabled", "disabled")
+        $('.field-bill_nr .control-label').addClass("mark_noprint")
+        $('.field-bill_nr .controls').addClass("mark_noprint")
+        $('.field-bill_nr .help_noprint').removeClass("hidden")
+        $('#suit_form_tabs').css('display','none')
+        $('#id_service_input').val(text[2])
+        {% else %}
+          $('.field-bill_nr').css('display', 'none')
+        {% endif %}
+        try {
+          SelectBox.filter('id_service_from', text[2]);
+        } catch (e) {}
+      }
+      {% if add %}
+      else {
+        $('.bill.title').text("{% trans 'Bill' %}")
+        $('#id_reverse_charge').removeAttr("disabled")
+        $('.field-bill_nr .control-label').removeClass("mark_noprint")
+        $('.field-bill_nr .controls').removeClass("mark_noprint")
+        $('.field-bill_nr .help_noprint').addClass("hidden")
+        $('#suit_form_tabs').css('display','block')
+        $('#id_service_input').val('')
+        try {
+          SelectBox.filter('id_service_from', '');
+        } catch (e) {}
+      }
+      {% endif %}
+  }
+
+  special_bill_modifications()
+}
+);
+
+// monkey-patch dismissAddAnotherPopup to update related fields
+var orig_dismissAddAnotherPopup = dismissAddAnotherPopup
+dismissAddAnotherPopup = function my_dismissAddAnotherPopup(win, newId, newRepr) {
+  orig_dismissAddAnotherPopup(win, newId, newRepr)
+  var name = windowname_to_id(win.name);
+  var elem = document.getElementById(name);
+  if (elem)
+    $(elem).trigger('change')
+}
+
+$('#id_vat_rate li').each(function () {
+  special_text = /(\()(.*)(\))/.exec($(this).text())
+  if (special_text) {
+    $(this).addClass("bill")
+  }
+})
+
+</script>
+{% endblock %}
+{% block field_sets %}
+    {% load suit_tags %}
+    {% load billing_extras %}
+    <div class="hidden fields" hidden="true">{{ adminform.form.receipt }}{{ adminform.form.recipient }}{{ adminform.form.recipient_local }}</div>
+    <fieldset id="billing_fieldset" class="{{ adminform.form.instance.storno|yesno:'storno,' }}
+            {{ add|yesno:'add,change' }}
+            {{ adminform.form.instance.receipt|yesno:'receipt,bill' }}
+            {% if adminform.form.instance.vat_rate_local|vat_rate_title != '' %}lump-sum{%endif%}
+            {{ adminform.form.instance.reverse_charge|yesno:'reverse_charge,' }}
+            module aligned">
+          <div class="control-group">
+            <div class="table">
+              {% if adminform.form.instance.storno %}
+              <h1 class="stornowarning">{% trans 'Storno' %}</h1>
+              {% else %}
+              {% endif %}
+              <div class="table-row">
+                    <div class="table-cell">
+                <div class="table">
+                  <div class="table-row">
+                    <div class="table-cell">
+                      <div class="bill field-recipient_local table-row">
+                        <div class="control-label"></div>
+                        <div class="readonly">{{ adminform.form.instance.recipient_local }}</div>
+                      </div>
+                    </div>
+                    <div class="table-cell">
+                      <div class="add field-member table-row {{adminform.form.member.errors|yesno:'error,'}}">
+                        <div class="control-label">{{ adminform.form.member.label_tag }}
+                        <span class="help-block">{% trans 'field not shown in receipt/bill printout' %}</span>
+                        </div>
+                        <div class="controls">{{ adminform.form.member }}
+                        {% if adminform.form.member.errors %}<div class="help-block">{{ adminform.form.member.errors|striptags }}</div>{% endif %}
+                        </div>
+                      </div>
+                      <div class="change noprint field-member_local table-row">
+                        <div class="control-label">{{ adminform.form.member_local.label_tag }}</div>
+                        <div class="readonly">{{ adminform.form.instance.member_local }}</div>
+                      </div>
+                      <div class="add receipt field-company table-row {{adminform.form.company.errors|yesno:'error,'}}">
+                        <div class="control-label">{{ adminform.form.company.label_tag }}
+                        <span class="help-block">{% trans 'field not shown in receipt/bill printout' %}</span>
+                        </div>
+                        <div class="controls">{{ adminform.form.company }}
+                        {% if adminform.form.company.errors %}<div class="help-block">{{ adminform.form.company.errors|striptags }}</div>{% endif %}
+                        </div>
+                      </div>
+                      <div class="field-invoicing_party table-row {{adminform.form.invoicing_party.errors|yesno:'error,'}}">
+                        <div class="control-label"></div>
+                        <div class="add controls">{{ adminform.form.invoicing_party }}
+                        {% if adminform.form.invoicing_party.errors %}<div class="help-block">{{ adminform.form.invoicing_party.errors|striptags }}</div>                        {% endif %}
+                        </div>
+                        <div class="change readonly">{{ adminform.form.instance.invoicing_party }}</div>
+                      </div>
+                      <div class="field-tax_nr table-row {{adminform.form.tax_nr.errors|yesno:'error,'}}">
+                        <div class="control-label">{{ adminform.form.tax_nr.label_tag }}</div>
+                        <div class="add controls">{{ adminform.form.tax_nr }}
+                        {% if adminform.form.tax_nr.errors %}<div class="help-block">{{ adminform.form.tax_nr.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="change readonly">{{ adminform.form.instance.tax_nr }}</div>
+                      </div>
+                      <div class="bill field-vat_id table-row {{adminform.form.vat_id.errors|yesno:'error,'}}">
+                        <div class="control-label">{{ adminform.form.vat_id.label_tag }}</div>
+                        <div class="add controls">{{ adminform.form.vat_id }}
+                        {% if adminform.form.vat_id.errors %}<div class="help-block">{{ adminform.form.vat_id.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="change readonly">{{ adminform.form.instance.vat_id }}</div>
+                      </div>
+                      <div class="bill field-tax_id table-row {{adminform.form.tax_id.errors|yesno:'error,'}}">
+                        <div class="control-label">{{ adminform.form.tax_id.label_tag }}</div>
+                        <div class="add controls">{{ adminform.form.tax_id }}
+                        {% if adminform.form.tax_id.errors %}<div class="help-block">{{ adminform.form.tax_id.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="change readonly">{{ adminform.form.instance.tax_id }}</div>
+                      </div>
+                      <div class="field-bill_nr table-row {{adminform.form.bill_nr.errors|yesno:'error,'}}">
+                        <div class="control-label">{{ adminform.form.bill_nr.label_tag }}
+                        <span class="help-block help_noprint hidden">{% trans 'field not shown in receipt/bill printout' %}</span>
+                        </div>
+                        <div class="add controls">{{ adminform.form.bill_nr }}
+                        {% if adminform.form.bill_nr.errors %}<div class="help-block">{{ adminform.form.bill_nr.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="change readonly">{{ adminform.form.instance.bill_nr }}</div>
+                      </div>
+                      <div class="field-date table-row {{adminform.form.date.errors|yesno:'error,'}}">
+                        <div class="control-label">{{ adminform.form.date.label_tag }}</div>
+                        <div class="add controls">{{ adminform.form.date }}
+                        {% if adminform.form.date.errors %}<div class="help-block">{{ adminform.form.date.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="change readonly">{{ adminform.form.instance.date }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </div>
+              <div class="table-row">
+                <div class="table-cell">
+                  <div class="table">
+                    <div class="field-title table-row ">
+                      {% if add or adminform.form.instance.receipt %}<div class="receipt title">{% trans 'Receipt' %}</div>{% endif %}
+                      {% if add or not adminform.form.instance.receipt %}<div class="bill title">
+                        {% if adminform.form.instance.vat_rate_local|vat_rate_title == "" %}
+                          {% trans 'Bill' %}
+                        {% else %}
+                          {{ adminform.form.instance.vat_rate_local | vat_rate_title }}
+                        {% endif %}
+                      </div>{% endif %}
+                    </div>
+                    <div class="noprint bill add field-service table-row {{adminform.form.service.errors|yesno:'error,'}}">
+                        <div class="control-label">{{ adminform.form.service.label_tag }}
+                        <span class="help-block">{% trans 'field not shown in receipt/bill printout' %}</span>
+                        </div>
+                        <div class="controls">{{ adminform.form.service }}
+                        {% if adminform.form.service.errors %}<div class="help-block">{{ adminform.form.service.errors|striptags }}</div>{% endif %}
+                        </div>
+                    </div>
+                    <div class="field-service_free table-row {{adminform.form.service_free.errors|yesno:'error,'}}">
+                        <div class="control-label">{{ adminform.form.service_free.label_tag }}</div>
+                        <div class="add controls">{{ adminform.form.service_free }}
+                        {% if adminform.form.service_free.errors %}<div class="help-block">{{ adminform.form.service_free.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="change readonly">{{ adminform.form.instance.service_free }}</div>
+                    </div>
+                    <div class="field-comment table-row {{adminform.form.comment.errors|yesno:'error,'}}">
+                        <div class="control-label"></div>
+                        <div class="add controls">{{ adminform.form.comment }}
+                        {% if adminform.form.comment.errors %}<div class="help-block">{{ adminform.form.comment.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="change readonly">{{ adminform.form.instance.comment }}</div>
+                    </div>
+                    <div class="receipt field-delivery_date table-row {{adminform.form.delivery_date.errors|yesno:'error,'}}">
+                        <div class="control-label">{{ adminform.form.delivery_date.label_tag }}</div>
+                        <div class="add controls">{{ adminform.form.delivery_date }}
+                        {% if adminform.form.delivery_date.errors %}<div class="help-block">{{ adminform.form.delivery_date.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="change readonly">{{ adminform.form.instance.delivery_date }}</div>
+                    </div>
+                    <div class="field-netto table-row {{adminform.form.netto.errors|yesno:'error,'}}">
+                      <div class="table-cell"></div>
+                      <div class="table-cell">
+                        <div class="table-row">
+                          <div class="control-label">{{ adminform.form.netto.label_tag }}</div>
+                          <div class="add controls">{{ adminform.form.netto }}
+                          {% if adminform.form.netto.errors %}<div class="help-block">{{ adminform.form.netto.errors|striptags }}</div>{% endif %}
+                          </div>
+                          <div class="change readonly">{{ adminform.form.instance.netto|format_money }}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="field-reverse_charge table-row {{adminform.form.reverse_charge.errors|yesno:'error,'}}">
+                        <div class="control-label"><span class="add">{{ adminform.form.reverse_charge.label_tag }}</span></div>
+                        <div class="add controls">{{ adminform.form.reverse_charge }}
+                        {% if adminform.form.reverse_charge.errors %}<div class="help-block">{{ adminform.form.reverse_charge.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="change readonly">{% trans 'Reverse Charge' %}</div>
+                    </div>
+                    <div class="add field-vat_rate table-row {{adminform.form.vat_rate.errors|yesno:'error,'}}">
+                        <div class="control-label">{{ adminform.form.vat_rate.label_tag }}
+                        <span class="help-block help_noprint hidden">{% trans 'field not shown in receipt/bill printout - but required for calculations' %}</span>
+                        </div>
+                        <div class="controls">{{ adminform.form.vat_rate }}
+                        {% if adminform.form.vat_rate.errors %}<div class="help-block">{{ adminform.form.vat_rate.errors|striptags }}</div>{% endif %}
+                        </div>
+                    </div>
+                    <div class="change field-vat_rate_local table-row">
+                        {% if adminform.form.vat_rate_local.errors %}<div class="help-block">{{ adminform.form.vat_rate_local.errors|striptags }}</div>{% endif %}
+                        <div class="control-label">{{ adminform.form.vat_rate_local.label_tag }}</div>
+                        <div class="readonly">{{ adminform.form.instance.vat_rate_local }}</div>
+                    </div>
+                    <div class="change field-vat table-row">
+                      <div class="table-cell"></div>
+                      <div class="table-cell">
+                        <div class="table-row">
+                          <div class="control-label">{% trans 'VAT:' %}</div>
+                          <div class="readonly">{{ adminform.form.instance.brutto|calc_vat:adminform.form.instance.netto }}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="field-brutto table-row {{adminform.form.brutto.errors|yesno:'error,'}}">
+                      <div class="table-cell"></div>
+                      <div class="table-cell">
+                        <div class="table-row">
+                          <div class="control-label"><span>{{ adminform.form.brutto.label_tag }}</span></div>
+                          <div class="add controls">{{ adminform.form.brutto }}
+                          {% if adminform.form.brutto.errors %}<div class="help-block">{{ adminform.form.brutto.errors|striptags }}</div>{% endif %}
+                          <span class="help-block help_noprint hidden">{% trans 'field not shown in receipt/bill printout' %}</span>
+                          </div>
+                          <div class="change readonly">{{ adminform.form.instance.brutto|format_money }}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="print bill field-footer1 table-row">
+                      <div class="table-cell">Betrag bar erhalten:</div>
+                      <div class="table-cell"></div>
+                    </div>
+                    <div class="print bill field-footer2 table-row">
+                      <div class="table-cell"></div>
+                      <div class="table-cell">Lärz, </div>
+                      <div class="table-cell"></div>
+                    </div>
+                    <div class="print bill field-footer3 table-row">
+                      <div class="table-cell"></div>
+                      <div class="table-cell">Ort, Datum</div>
+                      <div class="table-cell">Unterschrift</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="noprint field-storno table-row {{adminform.form.storno.errors|yesno:'error,'}}">
+                  <div class="change control-label">{{ adminform.form.storno.label_tag }}</div>
+                  <div class="change controls">{{ adminform.form.storno }}
+                  {% if adminform.form.storno.errors %}<div class="help-block">{{ adminform.form.storno.errors|striptags }}</div>{% endif %}
+                  </div>
+              </div>
+            </div>
+          </div>
+    </fieldset>
+{% endblock %}

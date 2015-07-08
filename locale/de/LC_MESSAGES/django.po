@@ -1,0 +1,797 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-03-07 16:55+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: crewdb/admin.py:68
+msgid "Tickets available"
+msgstr "Tickets verfügbar"
+
+#: crewdb/admin.py:145 crewdb/admin.py:190
+#, python-brace-format
+msgid "<a href=\"{0}{1}\" class=\"btn\"><i class=\"icon-user\"></i>Edit</a>"
+msgstr ""
+
+#: crewdb/admin.py:148 crewdb/admin.py:193
+#: crewdb/templates/admin/crewdb/billing/billing_inline.html:15
+#: crewdb/templates/admin/crewdb/billing/billing_inline.html:54
+msgid "Member"
+msgstr "Member"
+
+#: crewdb/admin.py:164 crewdb/admin.py:209 crewdb/admin.py:271
+#: crewdb/models.py:195 crewdb/models.py:321 crewdb/models.py:433
+msgid "Tickets"
+msgstr "Tickets"
+
+#: crewdb/admin.py:223
+msgid "Status"
+msgstr "Status"
+
+#: crewdb/admin.py:227
+msgid "finalized"
+msgstr "abgeschlossen"
+
+#: crewdb/admin.py:227
+msgid "not finalized"
+msgstr "nicht abgeschlossen"
+
+#: crewdb/admin.py:250 crewdb/models.py:155
+msgid "Budget"
+msgstr "Budget"
+
+#: crewdb/admin.py:260
+msgid "General"
+msgstr "Allgemein"
+
+#: crewdb/admin.py:260
+msgid "Provisions/Access"
+msgstr "Versorgung & Zugang"
+
+#: crewdb/admin.py:275 crewdb/models.py:169 crewdb/models.py:361
+msgid "Finalized"
+msgstr "Abgeschlossen"
+
+#: crewdb/admin.py:408 crewdb/models.py:452
+msgid "Amount"
+msgstr "Anzahl"
+
+#: crewdb/admin.py:524 crewdb/models.py:349 crewdb/models.py:362
+#: crewdb/models.py:394 crewdb/models.py:413
+msgid "Crew"
+msgstr "Crew"
+
+#: crewdb/admin.py:582
+msgid "Personal info"
+msgstr "Persönliche Informationen"
+
+#: crewdb/admin.py:583
+msgid "Permissions"
+msgstr "Berechtigungen"
+
+#: crewdb/admin.py:585
+msgid "Important dates"
+msgstr "Wichtige Daten"
+
+#: crewdb/admin.py:706
+#: crewdb/templates/admin/crewdb/billing/change_form.html:498
+msgid "Bill"
+msgstr "Rechnung"
+
+#: crewdb/admin.py:706 crewdb/models.py:723
+#: crewdb/templates/admin/crewdb/billing/change_form.html:497
+msgid "Receipt"
+msgstr "Quittung"
+
+#: crewdb/models.py:37 crewdb/models.py:108 crewdb/models.py:262
+msgid ""
+"Phone number must be entered in the format: \"+999999999\". Up to 15 digits "
+"allowed."
+msgstr ""
+"Telefon-Nummer muss in der Form \"+999999999\" eingegeben werden. Maximal 15 "
+"Stellen."
+
+#: crewdb/models.py:38 crewdb/models.py:109 crewdb/models.py:263
+msgid "Phone"
+msgstr "Telefon"
+
+#: crewdb/models.py:39 crewdb/models.py:56 crewdb/models.py:111
+#: crewdb/models.py:265
+msgid "Address"
+msgstr "Adresse"
+
+#: crewdb/models.py:55 crewdb/models.py:107 crewdb/models.py:261
+msgid "Name"
+msgstr "Name"
+
+#: crewdb/models.py:88
+msgid "Beginning of event has to be before end of event!"
+msgstr "Anfang des Ereignisses muss vor dem Ende liegen!"
+
+#: crewdb/models.py:91 crewdb/models.py:525
+msgid "From"
+msgstr "Von"
+
+#: crewdb/models.py:92 crewdb/models.py:526
+msgid "To"
+msgstr "Bis"
+
+#: crewdb/models.py:93
+msgid "Amount of money for workers per day"
+msgstr "Zahlbetrag pro Tag"
+
+#: crewdb/models.py:93
+msgid "Fee"
+msgstr "Vergütung"
+
+#: crewdb/models.py:94
+msgid "Use short description (best one word)"
+msgstr "Kurzbeschreibung (etwa ein Wort)"
+
+#: crewdb/models.py:94 crewdb/models.py:130 crewdb/models.py:609
+msgid "Description"
+msgstr "Beschreibung"
+
+#: crewdb/models.py:110 crewdb/models.py:264
+msgid "Email"
+msgstr "EMail"
+
+#: crewdb/models.py:129
+msgid "Type"
+msgstr "Typ"
+
+#: crewdb/models.py:145
+#, python-format
+msgid ""
+"Billing for Crew %(crew)s is finalized, you are not allowed to do any "
+"changes to this Crew anymore"
+msgstr ""
+"Die Bearbeitung der Crew %(crew)s ist abgeschlossen, es sind keine weiteren "
+"Änderungen mehr möglich"
+
+#: crewdb/models.py:151
+msgid "Crew name"
+msgstr "Crew"
+
+#: crewdb/models.py:154
+msgid "Host contact"
+msgstr "Partner d. Veranstalters"
+
+#: crewdb/models.py:156 crewdb/models.py:359 crewdb/models.py:393
+#: crewdb/models.py:492 crewdb/models.py:527 crewdb/models.py:759
+msgid "Comment"
+msgstr "Anmerkungen"
+
+#: crewdb/models.py:157
+msgid "Can use supporter"
+msgstr "betreut Helfer"
+
+#: crewdb/models.py:191 crewdb/models.py:193
+#, python-format
+msgid "%(ticket_amount)s x %(ticket_type)s"
+msgstr ""
+
+#: crewdb/models.py:203
+#, python-format
+msgid ""
+"%(netto__sum)0.2f € Netto\n"
+"%(brutto__sum)0.2f € Brutto"
+msgstr ""
+
+#: crewdb/models.py:204
+msgid "Accounting"
+msgstr "Abrechnung"
+
+#: crewdb/models.py:210
+#, python-format
+msgid "%(amount__sum)0.2f €"
+msgstr ""
+
+#: crewdb/models.py:211
+msgid "Advance"
+msgstr "Vorschuss"
+
+#: crewdb/models.py:235 crewdb/models.py:291
+#: crewdb/templates/admin/crewdb/billing/billing_inline.html:8
+msgid "Billings"
+msgstr "Rechnungen"
+
+#: crewdb/models.py:239
+msgid "Number of Members"
+msgstr ""
+
+#: crewdb/models.py:251
+msgid "You must select a crew for every member"
+msgstr "Du musst für jeden Member eine Crew auswählen!"
+
+#: crewdb/models.py:254
+#, python-format
+msgid ""
+"Billing for Crew %(crew)s is finalized, you are not allowed to do any "
+"changes to Crew-Members anymore"
+msgstr ""
+"Die Bearbeitung der Crew %(crew)s ist abgeschlossen, es sind keine weiteren "
+"Änderungen der Crew-Member mehr möglich"
+
+#: crewdb/models.py:266
+msgid "Crew Contact"
+msgstr "Ansprechpartner für Crew"
+
+#: crewdb/models.py:334 crewdb/models.py:387 crewdb/models.py:405
+#: crewdb/models.py:443 crewdb/models.py:482 crewdb/models.py:511
+#: crewdb/models.py:661
+#, python-format
+msgid ""
+"Billing for Crew %(crew)s is finalized, you are not allowed to do any "
+"changes to Crew-Items anymore"
+msgstr ""
+"Die Bearbeitung der Crew %(crew)s ist abgeschlossen, es sind keine weiteren "
+"Änderungen mehr möglich"
+
+#: crewdb/models.py:340
+msgid "Before Number"
+msgstr "Anzahl davor"
+
+#: crewdb/models.py:341 crewdb/models.py:344 crewdb/models.py:347
+msgid "Voucher"
+msgstr "Essenmarken"
+
+#: crewdb/models.py:342 crewdb/models.py:345 crewdb/models.py:348
+msgid "Issued"
+msgstr "Ausgegeben"
+
+#: crewdb/models.py:343
+msgid "During Number"
+msgstr "Anzahl während"
+
+#: crewdb/models.py:346
+msgid "After Number"
+msgstr "Anzahl danach"
+
+#: crewdb/models.py:360
+msgid "Comment Realization"
+msgstr "Kommentar zur Umsetzung"
+
+#: crewdb/models.py:361
+msgid "no crew (and related member/bill) change possibile after Finalization!"
+msgstr ""
+"Wenn die Bearbeitung der Crew abgeschlossen wird, sind keine weiteren "
+"Änderungen mehr möglich"
+
+#: crewdb/models.py:372
+msgid "name"
+msgstr "Name"
+
+#: crewdb/models.py:373
+msgid "If active, worktimes for crew members are considered"
+msgstr "Wenn aktiviert werden die Arbeitszeiten der Crew-Member berücksichtigt"
+
+#: crewdb/models.py:373
+msgid "individual billing"
+msgstr "individuelle Rechnungen"
+
+#: crewdb/models.py:395
+msgid "Compensation Schema"
+msgstr "Abrechnungsart"
+
+#: crewdb/models.py:410
+msgid "You must enter the amount of tickets (or ignore this ticket type)"
+msgstr "Bitte Anzahl der Tickets eingeben (oder Ticket-Typ ignorieren)"
+
+#: crewdb/models.py:414
+msgid "Ticket"
+msgstr "Ticket"
+
+#: crewdb/models.py:415
+msgid "Number"
+msgstr "Anzahl"
+
+#: crewdb/models.py:448
+msgid "You must select a least one incoming or outgoing Ticket-Type!"
+msgstr ""
+"Es muss mindestens ein ein- oder ausgehender Ticket-Typ ausgewählt werden!"
+
+#: crewdb/models.py:451 crewdb/models.py:490 crewdb/models.py:524
+#: crewdb/models.py:733 crewdb/models.py:735
+msgid "Crew Member"
+msgstr "Member: Crew"
+
+#: crewdb/models.py:453
+msgid "Ticket to Host (in)"
+msgstr "Ticket zurückgegeben (an Veranstalter)"
+
+#: crewdb/models.py:454
+msgid "Ticket to Member (out)"
+msgstr "Ticket ausgegeben (an Member)"
+
+#: crewdb/models.py:455 crewdb/models.py:493
+msgid "Date"
+msgstr "Datum"
+
+#: crewdb/models.py:487
+msgid "No advance if no money involved!"
+msgstr "Kein Vorschuss ohne Geld!"
+
+#: crewdb/models.py:491
+msgid "Money"
+msgstr "Betrag"
+
+#: crewdb/models.py:494
+msgid "Advance for Crew"
+msgstr "Vorschuss für Crew"
+
+#: crewdb/models.py:495
+#: crewdb/templates/admin/crewdb/billing/change_form.html:114
+#: crewdb/templates/admin/crewdb/billing/change_form.html:150
+msgid "Counterbalanced"
+msgstr "Ausgeglichen"
+
+#: crewdb/models.py:517 crewdb/models.py:519
+msgid ""
+"Work Times should only be registered for Members of Crews with individual "
+"billing"
+msgstr ""
+"Arbeitszeiten dürfen nur für Member von Crews mit individueller Abrechnung "
+"angelegt werden"
+
+#: crewdb/models.py:521
+msgid "Beginning of work phase has to be before the end!"
+msgstr "Anfang der Arbeit muss vor dem Ende liegen!"
+
+#: crewdb/models.py:534
+msgid "Days"
+msgstr "Tage"
+
+#: crewdb/models.py:590
+msgid "Days + Fee"
+msgstr "Tage + Vergütung"
+
+#: crewdb/models.py:608
+msgid "VAT rate %"
+msgstr "USt-Satz %"
+
+#: crewdb/models.py:631 crewdb/models.py:756 crewdb/models.py:757
+msgid "Service"
+msgstr "Leistungen / Zeit"
+
+#: crewdb/models.py:657
+msgid "You must select a member for every billing / receipt"
+msgstr "Du musst für jede Rechnung oder Quittung einen Member auswählen!"
+
+#: crewdb/models.py:672
+msgid ""
+"You try to submit same dataset twice! Please check and change before "
+"continuing!"
+msgstr "Du versuchst den gleichen Datensatz erneut anzulegen! Bitte prüfen!"
+
+#: crewdb/models.py:677
+#, python-format
+msgid "VAT-Rate 0%s requires a VAT ID."
+msgstr "USt-Satz 0%s benötigt USt-ID."
+
+#: crewdb/models.py:679
+#, python-format
+msgid "VAT-Rate 7%s requires a Tax Number."
+msgstr "USt-Satz 7%s benötigt eine Steuernummer."
+
+#: crewdb/models.py:681
+#, python-format
+msgid "VAT-Rate 19%s requires a Tax ID."
+msgstr "USt-Satz 19%s benötigt eine Steuer-ID."
+
+#: crewdb/models.py:683 crewdb/models.py:685
+msgid "You should enter some value here!"
+msgstr "Hier muss etwas eingegeben werden!"
+
+#: crewdb/models.py:726 crewdb/models.py:728
+msgid "Recipient"
+msgstr "Empfänger"
+
+#: crewdb/models.py:739
+msgid "Company"
+msgstr "Firma"
+
+#: crewdb/models.py:742
+msgid "invoicing Party"
+msgstr "Rechnungssteller"
+
+#: crewdb/models.py:745
+msgid "Tax-Number"
+msgstr "Steuer-Nummer"
+
+#: crewdb/models.py:746
+#: crewdb/templates/admin/crewdb/billing/billing_inline.html:12
+#: crewdb/templates/admin/crewdb/billing/billing_inline.html:51
+msgid "Bill-Number"
+msgstr "Rechnungs-Nummer"
+
+#: crewdb/models.py:749
+msgid "VAT ID"
+msgstr "USt-ID"
+
+#: crewdb/models.py:750
+msgid "Tax ID"
+msgstr "Steuer ID"
+
+#: crewdb/models.py:753
+#: crewdb/templates/admin/crewdb/billing/billing_inline.html:11
+#: crewdb/templates/admin/crewdb/billing/billing_inline.html:50
+msgid "Datum"
+msgstr "Datum"
+
+#: crewdb/models.py:762
+msgid "Delivery date"
+msgstr "Lieferdatum"
+
+#: crewdb/models.py:766
+#: crewdb/templates/admin/crewdb/billing/billing_inline.html:13
+#: crewdb/templates/admin/crewdb/billing/billing_inline.html:52
+msgid "Netto"
+msgstr "Nettobetrag"
+
+#: crewdb/models.py:767
+#: crewdb/templates/admin/crewdb/billing/billing_inline.html:14
+#: crewdb/templates/admin/crewdb/billing/billing_inline.html:53
+msgid "Brutto"
+msgstr "Bruttobetrag"
+
+#: crewdb/models.py:769 crewdb/models.py:771
+msgid "VAT Rate"
+msgstr "USt-Satz"
+
+#: crewdb/templates/admin/crewdb/billing/billing_inline.html:19
+#: crewdb/templates/admin/crewdb/billing/billing_inline.html:58
+msgid "Sum"
+msgstr "Summe"
+
+#: crewdb/templates/admin/crewdb/billing/billing_inline.html:42
+msgid "Add Bill"
+msgstr "Rechnung hinzufügen"
+
+#: crewdb/templates/admin/crewdb/billing/billing_inline.html:42
+#: crewdb/templates/admin/crewdb/billing/billing_inline.html:81
+msgid "save"
+msgstr "speichern"
+
+#: crewdb/templates/admin/crewdb/billing/billing_inline.html:47
+msgid "Receipts"
+msgstr "Quittungen"
+
+#: crewdb/templates/admin/crewdb/billing/billing_inline.html:81
+msgid "Add Receipt"
+msgstr "Quittung hinzufügen"
+
+#: crewdb/templates/admin/crewdb/billing/change_form.html:5
+msgid "You have to enable Javascript to use this site!"
+msgstr "Javascript muss angeschalten sein, um diese Seite zu nutzen!"
+
+#: crewdb/templates/admin/crewdb/billing/change_form.html:40
+msgid "Update Invoicing Party with new Member data?"
+msgstr "Rechnungsempfänger mit Member-Daten aktualisieren?"
+
+#: crewdb/templates/admin/crewdb/billing/change_form.html:58
+msgid "Update Comment with new Member data?"
+msgstr "Anmerkungen mit Member-Daten aktualisieren?"
+
+#: crewdb/templates/admin/crewdb/billing/change_form.html:63
+msgid "Update Netto with new Member data?"
+msgstr "Nettobetrag mit Member-Daten aktualisieren?"
+
+#: crewdb/templates/admin/crewdb/billing/change_form.html:184
+msgid "Update Invoicing Party with new Company data?"
+msgstr "Rechnungsempfänger mit Firmendaten aktualisieren?"
+
+#: crewdb/templates/admin/crewdb/billing/change_form.html:295
+msgid "Update Service with new Service data?"
+msgstr "Leistungen mit neuer Leistungsauswahl aktualisieren?"
+
+#: crewdb/templates/admin/crewdb/billing/change_form.html:389
+msgid "Back to Member"
+msgstr "Zurück zum Member"
+
+#: crewdb/templates/admin/crewdb/billing/change_form.html:394
+msgid "Back to Crew"
+msgstr "Zurück zur Crew"
+
+#: crewdb/templates/admin/crewdb/billing/change_form.html:428
+#: crewdb/templates/admin/crewdb/billing/change_form.html:440
+#: crewdb/templates/admin/crewdb/billing/change_form.html:502
+msgid "field not shown in receipt/bill printout"
+msgstr "Feld wird beim Ausdruck nicht angezeigt"
+
+msgid "field not shown in receipt/bill printout - but required for calculations"
+msgstr "Feld wird beim Ausdruck nicht angezeigt - Feld wird benötigt für Berechnungen"
+
+#: crewdb/templates/admin/crewdb/billing/change_form.html:556
+msgid "VAT:"
+msgstr "USt:"
+
+#: crewdb/templates/admin/crewdb/member/change_form.html:35
+msgid ""
+"It is not allowed to add Work-Times to Members of Crews without individual "
+"Billing"
+msgstr ""
+"Arbeitszeiten dürfen nur für Member von Crews mit individueller Abrechnung "
+"angelegt werden"
+
+#: crewdb/views.py:40
+#, python-format
+msgid "Bill found from %s (bill-date %s):"
+msgstr "Rechnung gefunden vom %s (Rechnungsdatum %s):"
+
+#: crewdb/views.py:51
+#, python-format
+msgid "Advance found from %s:"
+msgstr "Vorschuss gezahlt am %s:"
+
+#: crewdb/views.py:64
+#, python-format
+msgid "Crew-Advance found, Member %s, %s:"
+msgstr "Crew-Vorschuss gezahlt an Member %s am %s:"
+
+
+#: templates/admin/base.html:186
+#, fuzzy
+#| msgid "Comment Realization"
+msgid "Documentation"
+msgstr "Kommentar zur Umsetzung"
+
+msgid "History"
+msgstr "Verlauf"
+
+msgid "Access"
+msgstr "Bändchen"
+
+msgid "Access given"
+msgstr "Bändchen ausgegeben"
+
+msgid "planned access only."
+msgstr "(geplanter) Member-Zugang."
+
+msgid "lanyard given"
+msgstr "ge-bändselt"
+
+msgid "You must select a Access-Type to give a lanyard"
+msgstr "Zugangs-Typ muss ausgewählt werden"
+
+msgid "Tickets / Access"
+msgstr "Tickets / Bändchen"
+
+msgid "Tickets<br/>sum"
+msgstr "Tickets<br/>gesamt"
+
+msgid "Tickets<br/>available"
+msgstr "Tickets<br/>verfügbar"
+
+msgid "Lanyards<br/>planned"
+msgstr "Bändchen<br/>verplant"
+
+msgid "Present<br/>(lanyard)"
+msgstr "Anwesend<br/>(Bändsel)"
+
+msgid "Left Budget:"
+msgstr "Rest-Budget:"
+
+msgid "Expenses:"
+msgstr "Ausgaben:"
+
+msgid "Advances"
+msgstr "Vorschüsse"
+
+msgid "to Member"
+msgstr "an Member"
+
+msgid "use dot instead of comma for decimals"
+msgstr "nutze Punkt statt Komma für Dezimalstellen"
+
+msgid "Access object"
+msgstr "Ticket-Budget"
+
+msgid "Access objects"
+msgstr "Ticket-Budget"
+
+msgid "BillRecipient object"
+msgstr "Rechnungsempfänger"
+
+msgid "BillRecipient objects"
+msgstr "Rechnungsempfänger"
+
+msgid "EventTimes object"
+msgstr "Event-Zeitraum"
+
+msgid "EventTimes objects"
+msgstr "Event-Zeiten"
+
+msgid "Company object"
+msgstr "Unternehmen"
+
+msgid "Company objects"
+msgstr "Unternehmen"
+
+msgid "Ticket object"
+msgstr "Ticket/Bändchen-Typ"
+
+msgid "Ticket objects"
+msgstr "Ticket/Bandchen-Typen"
+
+msgid "Crew object"
+msgstr "Crew"
+
+msgid "Crew objects"
+msgstr "Crews"
+
+msgid "Member object"
+msgstr "Member"
+
+msgid "Member objects"
+msgstr "Members"
+
+msgid "Provision object"
+msgstr "Versorgung"
+
+msgid "Provision objects"
+msgstr "Versorgungsleistungen"
+
+msgid "AccountingDone object"
+msgstr "Rechnungsabschluss"
+
+msgid "AccountingDone objects"
+msgstr "Rechnungsabschluss"
+
+msgid "CompensationSchema object"
+msgstr "Abrechnungs-Schema"
+
+msgid "CompensationSchema objects"
+msgstr "Abrechnungs-Schema"
+
+msgid "Compensation object"
+msgstr "Abrechnungsart"
+
+msgid "Compensation objects"
+msgstr "Abrechnungs-Schema"
+
+msgid "TicketAdmin object"
+msgstr "Ticket-Aktion"
+
+msgid "TicketAdmin objects"
+msgstr "Ticket-Aktionen"
+
+msgid "Advance object"
+msgstr "Vorschuss"
+
+msgid "Advance objects"
+msgstr "Vorschüsse"
+
+msgid "WorkTime object"
+msgstr "Arbeitszeit"
+
+msgid "WorkTime objects"
+msgstr "Arbeitszeiten"
+
+msgid "VatRate object"
+msgstr "Steuersatz"
+
+msgid "VatRate objects"
+msgstr "Steuersätze"
+
+msgid "Service object"
+msgstr "Leistungen"
+
+msgid "Service objects"
+msgstr "Leistungskatalog"
+
+msgid "Billing object"
+msgstr "Rechnung oder Quittung"
+
+msgid "Billing objects"
+msgstr "Rechnungen und Quittungen"
+
+msgid "Billing"
+msgstr "Abrechnung"
+
+msgid "Host-Users"
+msgstr "Partner d. Veranstalters"
+
+msgid "Work Times"
+msgstr "Arbeitszeiten"
+
+msgid "Ticket Action"
+msgstr "Ticket-Aktion"
+
+msgid "Ticket Sending / Changing / Giving In+Out"
+msgstr "Ticket verschicken / tauschen / ausgeben"
+
+msgid "Crew Contacts"
+msgstr "Ansprechpartner"
+
+msgid "Settings"
+msgstr "Einstellungen"
+
+msgid "developed with"
+msgstr "Entwickelt mit"
+
+msgid "Free Software"
+msgstr "Freier Software"
+
+msgid "report a problem"
+msgstr "Melde ein Problem"
+
+msgid "thanks to"
+msgstr "Dank an die"
+
+msgid "developers"
+msgstr "Entwickler"
+
+msgid "Save Crew to Activate"
+msgstr "zum aktivieren Crew speichern"
+
+msgid "There are not enough tickets for your access selections"
+msgstr "Es gibt nicht genügend Tickets für die gewählten Bändchen!"
+
+msgid "There are not enough tickets for the selected Access-Type"
+msgstr "Es gibt nicht genügend Tickets für das gewählte Bändchen!"
+
+msgid "It makes no sense to change tickets of the same type!"
+msgstr "Es macht keinen Sinn Tickets der selben Art zu tauschen!"
+
+msgid "Crew has not enough tickets left!"
+msgstr "Die Crew hat nicht genug Tickets übrig!"
+
+msgid "Crew has no tickets of this type!"
+msgstr "Die Crew hat keine Tickets dieses Typs!"
+
+msgid "The budget can't be smaller than all given-out tickets!"
+msgstr "Das Ticket-Budget darf nicht kleiner sein als die Zahl der ausgegebenen Tickets!"
+
+msgid "Free for events with less than 200 Members"
+msgstr "Frei für Events mit weniger als 200 'Membern'"
+
+msgid "Think twice before entering personal data!"
+msgstr "Denke nach bevor Du persönliche Daten erfasst!"
+
+msgid "'I don't want to live in a world where everything that I say, everything I do, everyone I talk to, every expression of creativity, or love, or friendship is recorded, and that's not something I'm willing to support, it's not something I'm willing to build, and it's not something I'm willing to live under.'"
+msgstr "'Ich will nicht in einer Welt leben, in der alles, was ich sage, alles was ich mache, der Name jedes Gesprächspartners, jeder Ausdruck von Kreativität, Liebe oder Freundschaft aufgezeichnet wird. Eine solche Welt werde ich nicht unterstützen, nicht mit bauen und nicht ertragen.'"
+
+msgid "Reverse Charge"
+msgstr "Steuerschuldnerschaft des Leistungsempfängers"
+
+msgid "Seq No"
+msgstr "Lfd. Nr."
+
+msgid "Storno"
+msgstr "Storniert"
+
+msgid "You have selected some invalid vat-rate!"
+msgstr "Bitte eine gültige USt-Rate auswählen!"
+
+msgid "Bill Title"
+msgstr "Rechnungs-Titel"
+
+msgid "Additional Bill Comment"
+msgstr "Zusätzliche Anmerkung für Rechnungen"
+
+msgid "Maximal Netto"
+msgstr "Maximaler Netto-Betrag"
+
+msgid "If none selected, service available for all bills"
+msgstr "Wenn michts ausgewählt, dann verfügbar für alle Rechnungen"
+
+msgid "Allowed Vat-Rates"
+msgstr "Zugehörige USt-Rate"
+
+msgid "Netto-Value to big for selected VAT-Rate (max %(max)d €)"
+msgstr "Netto-Betrag zu große für die gewählte USt-Rate (max %(max)d €)"

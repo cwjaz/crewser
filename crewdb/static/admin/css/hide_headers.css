@@ -1,0 +1,10 @@
+#ticketadmin_set-2-group, #ticketadmin_set-2-group .inline-related,
+#advance_set-2-group, #advance_set-2-group .inline-related {
+  margin-top: 0;
+}
+p {
+  white-space: pre;
+}
+.dynamic-advance_set td {
+  padding: 5px 10px 4px 10px;
+}

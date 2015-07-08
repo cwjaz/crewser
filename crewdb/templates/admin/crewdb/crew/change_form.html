@@ -1,0 +1,229 @@
+{% extends "admin/change_form.html" %}
+{% block after_related_objects %}
+{% load admin_static %}
+{% load i18n %}
+
+<script type="text/javascript">
+
+DEBUG = false
+
+$(document).ready(function() {
+  lanyards_planned_available = {}
+
+  //-----------------------------------------------------------
+  // change of access/lanyard-selector of any member
+  $('.field-access select').change(lanyard_selector_change)
+
+  //-----------------------------------------------------------
+  // change of ticket-budget number
+  // show or hide available lanyard-options
+  $('#access_set-group input[type="number"]').change(function() {
+    DEBUG && console.log("ticket budget change")
+    // only do something if ticket-type is already selected
+    if ($(this).closest('tr').find('select option[selected="selected"]').val()) {
+
+      DEBUG && console.log("ticket type selected")
+
+      var ticket_name = $(this).closest('tr').find('option[value="' + $(this).closest('tr').find('select').val() + '"]').text()
+      var old_ticket_number = parseInt($('td.field-ticket_all[ticket="' + ticket_name +'"] p').text())
+      var old_available_tickets = parseInt($('td.field-ticket_available[ticket="' + ticket_name +'"] p').text())
+      var lanyards_planned = parseInt($('td.field-lanyards_planned[ticket="' + ticket_name +'"] p').text())
+      var required_tickets = old_ticket_number - old_available_tickets
+
+      var ticket_number_change = 0
+
+      if ($(this).closest('tr').find('.delete input').attr("checked")) {
+        // if delete-button was checked (and change triggered from delete button click event), remove all tickets
+        $('td.field-ticket_all[ticket="' + ticket_name +'"] p').text(0)
+        ticket_number_change = -old_ticket_number
+      }
+      else {
+        // take-over ticket-number into main table and register ticket-change
+        $('td.field-ticket_all[ticket="' + ticket_name +'"] p').text($(this).val())
+        ticket_number_change = $(this).val() - old_ticket_number
+      }
+
+      // update ticket-available fields
+      $('td.field-ticket_available[ticket="' + ticket_name +'"] p').text(old_available_tickets + ticket_number_change)
+      $(this).closest('tr').find('.field-tickets_available p').text(old_available_tickets + ticket_number_change)
+
+      // if minimum tickets reached or just left, update all selector options
+      // if delete-button was pressed, update all selector options as well
+      DEBUG && console.log(old_ticket_number + " " + Math.max(required_tickets, lanyards_planned) + " " + (old_ticket_number + ticket_number_change))
+      if ((old_ticket_number == Math.max(required_tickets, lanyards_planned))   // leaving the 'non-available'-state
+        || (old_ticket_number + ticket_number_change == Math.max(required_tickets, lanyards_planned)) // entering the 'non-available'-state
+        || ($(this).closest('tr').find('.delete input').attr("checked"))) { // delete ticket position
+        DEBUG && console.log("minimum trigger")
+        $('#id_member_set-2-0-access').trigger('change')
+      }
+    }
+  })
+
+  //-----------------------------------------------------------
+  // click on delete-button for ticket-budget
+  // trigger ticket-number-change on click
+  $('.field-tickets_available').closest('tr').find('.delete input').click(function() {
+    if ($(this).attr("checked")) {
+      $(this).closest('tr').find('.field-amount input').addClass("hideInput").trigger('change')
+    }
+    else {
+      $(this).closest('tr').find('.field-amount input').val(1).removeClass("hideInput").trigger('change')
+    }
+  })
+
+  // hide fields on initial creation
+  $('#member_set-empty #id_member_set-__prefix__-crew_contact').closest('.multi-field-box').css('display', 'none')
+  $('#member_set-empty .multi-field-box .readonly').closest('.multi-field-box').css('display', 'none')
+
+  // limit field-values for decimal widgets
+  $('input[type="number"]').attr("min", "1")
+  $('.field-before_number input[type="number"]').attr("min", "0")
+  $('.field-during_number input[type="number"]').attr("min", "0")
+  $('.field-after_number input[type="number"]').attr("min", "0")
+
+  // trigger some access change to initialize the crew
+  $('#id_member_set-2-0-access').trigger('change')
+
+  // trigger changes for to-be removed ticket-budgets (relevant if back after error)
+  $('#access_set-group .delete input').each(function() {
+    if ($(this).attr("checked")) {
+      $(this).closest('tr').find('.field-amount input').addClass("hideInput")
+    }
+  })
+
+  //-----------------------------------------------------------
+  // initialize ticket-type selector on budget fields
+  // hide ticket-type selector for all used ticket types,
+  // add comment that budget is only active after saving the complete Crew
+  $('#access_set-group select').each(function() {
+    if (!$(this).find('option[selected="selected"]').val()) {
+      // newly added budget line, show help text
+      $(this).closest('tr').find('.field-tickets_available p').addClass("helpText").text("{% trans 'Save Crew to Activate' %}")
+      $(this).change(ticket_budget_selector_change)
+      $(this).trigger('change')
+    }
+    else {
+      // existent budget line, hide selector and copy value to text-field
+      $(this).addClass("hideSelector")
+      var new_label = document.createElement('p');
+      $(new_label).text($(this).find('option[selected="selected"]').text())
+      $(this).closest('td').append(new_label)
+    }
+  })
+});
+
+//-----------------------------------------------------------
+// change of access/lanyard-selector of any member
+// recount all planned accesses (lanyards) and compare with available tickets
+// show or hide available lanyard-options
+function lanyard_selector_change() {
+  DEBUG && console.log("lanyard_selector_change")
+
+  lanyards_planned_available = {}
+  $('.field-access select option').addClass("available").removeAttr("disabled")
+
+  // initiate number of available tickets
+  {% for ticket in tickets %}
+  DEBUG && console.log("lanyards planned available" + $('td.field-ticket_all[ticket="{{ ticket.ticket_name }}"] p').text())
+  lanyards_planned_available['{{ ticket.ticket_name }}'] = parseInt($('td.field-ticket_all[ticket="{{ ticket.ticket_name }}"] p').text())
+  {% endfor %}
+  DEBUG && console.log("lanyards available")
+  DEBUG && console.log(lanyards_planned_available)
+
+  // count used tickets trough all members (contact and common members)
+  $('.field-access select').each(function() {
+    lanyards_planned_available[$(this).find('option[value="' + $(this).val() + '"]').text()] -= 1
+  })
+
+  DEBUG && console.log("lanyards available")
+  DEBUG && console.log(lanyards_planned_available)
+
+  // update all selectors to display only available tickets as options
+  $('.field-access select option').each(function () {
+    if ($(this).val() == "" || lanyards_planned_available[$(this).text()] > 0) {
+      $(this).addClass("available").removeAttr("disabled")
+    } else {
+      if ($(this).val() != $(this).parent().val())
+        $(this).removeClass("available").attr("disabled", true)
+    }
+  })
+
+  // update ticket status table
+  $(this).find('option').each(function() {
+    $('td.field-lanyards_planned[ticket="' + $(this).text() +'"] p').text($('td.field-ticket_all[ticket="' + $(this).text() +'"] p').text() - lanyards_planned_available[$(this).text()])
+  })
+
+  // update the ticket budget selector (set minimum value and allow removing of ticket-budget if not required)
+  $('#access_set-group input[type="number"]').each(function() {
+    if ($(this).closest('tr').find('select option[selected="selected"]').val()) {
+      var ticket_name = $(this).closest('tr').find('option[value="' + $(this).closest('tr').find('select').val() + '"]').text()
+      var required_lanyards = $('td.field-ticket_all[ticket="' + ticket_name +'"] p').text() - lanyards_planned_available[ticket_name]
+      var required_tickets = $('td.field-ticket_all[ticket="' + ticket_name +'"] p').text() - $('td.field-ticket_available[ticket="' + ticket_name +'"] p').text()
+
+      $(this).attr("min", Math.max(required_lanyards, required_tickets) || 1)
+      DEBUG && console.log(ticket_name + " " + required_lanyards + " " + required_tickets + " " + $(this).attr("min"))
+
+      if (Math.max(required_lanyards, required_tickets))
+        $(this).closest('tr').find('.delete input').addClass("required")
+      else
+        $(this).closest('tr').find('.delete input').removeClass("required")
+    }
+  })
+}
+
+//-----------------------------------------------------------
+// change ticket-budget selector
+// hide all already used ticket-types
+function ticket_budget_selector_change() {
+  DEBUG && console.log("ticket_budget_selector_change")
+  // re-enable all available ticket options (except already stored ticket-budget options)
+  $('#access_set-group td.field-ticket select:not(.hideSelector) option:not(.existent)')
+    .removeClass("available").removeAttr("disabled")
+
+  // hide all used ticket-options
+  // loop trough all freshly added selectors
+  $('#access_set-group td.field-ticket select:not(.hideSelector)').each(function () {
+      select = $(this)
+      $('#access_set-group td.field-ticket select').each(function () {
+        if (!select.is(this))
+        // loop trough all selectors - available options will be hidden
+          $(select).find('option[value="' + $(this).val() + '"]').addClass("available")
+      })
+  })
+  // disable all hidden ticket-options
+  $('#access_set-group td.field-ticket select:not(.hideSelector) option.available:not([value=""])').attr("disabled", true)
+}
+
+//-----------------------------------------------------------
+// callback function which triggers a selector update if "add Ticket-Budget"
+// or "add Member" is pressed
+// show only available selector options
+function updateTicketStatus(row) {
+  DEBUG && console.log("updateTicketStatus")
+  if (row.closest('#access_set-group').length) {
+    // change of ticket-budget detected
+    // check against the existent ticket-budgets and mark as existent (will be hidden)
+    row.find('select option').each(function () {
+      if ($(this).val() == "" || (lanyards_planned_available[$(this).text()] >= 0)) {
+        $(this).addClass("available existent").attr("disabled", true)
+      }
+    })
+
+    // on change hide this option from all other selectors
+    row.find('td.field-ticket select').change(ticket_budget_selector_change)
+    row.find('td.field-ticket select').trigger('change')
+
+    // check if there are enough budget fields for all available ticket types (then hide add button)
+    if ($('#access_set-group td.field-ticket select').length == row.find('td.field-ticket select option').length)
+      $('#access_set-group tr.add-row').addClass("hideAddRow")
+    else
+      $('#access_set-group tr.add-row').removeClass("hideAddRow")
+  } else {
+    // change of member detected
+    row.find('select').change(lanyard_selector_change)
+    row.find('select').trigger('change')
+  }
+}
+
+</script>
+{% endblock %}

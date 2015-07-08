@@ -1,0 +1,138 @@
+{% extends "admin/change_form.html" %}
+{% block after_related_objects %}
+{% load i18n %}
+{% load admin_static %}
+<!-- modified to load DatePicker - Calendar -->
+<script type="text/javascript" src="{% static 'DatePicker/js/datepicker.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'DatePicker/css/base.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'DatePicker/css/clean.css' %}" />
+<script type="text/javascript" src="{% static 'DatePicker/js/DatePickerHooks.js' %}"></script>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+  //-----------------------------------------------------------
+  // change selected crew (also triggered after loading)
+  // read crew data (worktime, ticket-budget) and update fields
+  function crew_change() {
+    // remove all planned ticketadmin-sections on crew-change
+    $('#ticketadmin_set-2-group a.inline-deletelink').each(function () {
+      $(this)[0].click()
+    })
+
+    if ($("#id_crew").length) {
+      crew_id = $("#id_crew").val()
+    }
+    else
+      crew_id = $('#crew_id').text()
+    // get crew data (billing schema for worktime, ticket-budget for ticket-admin)
+    $.get('/crewdb/crew_data', {crew_id: crew_id}, function(data){
+      if (data.individual_billing) {
+        $("#suit_form_tabs a[href='#worktimes']").css('display', '')
+        $('.suit-tab.suit-tab-worktimes').css('display', '')
+        $('h3.worktime-error').css('display', 'none')
+      } else {
+        hide_worktime();
+      }
+      // hide all ticket-out options (except ----)
+      $('.field-ticket_out option').removeClass("available").attr("disabled", "true")
+      $('.field-ticket_out option[value=""]').removeAttr("disabled")
+      // hide all ticket-in options (except ----)
+      $('.field-ticket_in option').removeClass("available").attr("disabled", "true")
+      $('.field-ticket_in option[value=""]').removeAttr("disabled")
+      // hide all access options (except ---- and current option)
+      $('#id_access option').removeClass("available").attr("disabled", "true")
+      $('#id_access option[value=""]').removeAttr("disabled")
+      $('#id_access option[selected]').removeAttr("disabled")
+      // remove max attribute
+      $('.field-ticket_out option').removeAttr("max")
+
+      if (data.tickets) {
+        for (var i in data.tickets) {
+          if (data.tickets[i]["ticket_available"] > 0) {
+            $('.field-ticket_out option:contains(' + data.tickets[i]["ticket_name"] + ')')
+              .addClass("available").attr("max", data.tickets[i]["ticket_available"]).removeAttr("disabled")
+          }
+          if (data.tickets[i]["ticket_all"] > 0)
+            $('.field-ticket_in option:contains(' + data.tickets[i]["ticket_name"] + ')')
+              .addClass("available").removeAttr("disabled")
+          if (data.tickets[i]["ticket_all"] - data.tickets[i]["lanyards_planned"] > 0)
+            $('#id_access option:contains(' + data.tickets[i]["ticket_name"] + ')')
+              .addClass("available").removeAttr("disabled")
+        }
+      }
+    })
+  }
+  
+  if ($("#id_crew").length)
+    $("#id_crew").change(crew_change)
+
+  //-----------------------------------------------------------
+  // hide worktime tab if there is no data in the tab, else show warning
+  function hide_worktime() {
+    if ($('#worktime_set-0').length) {
+      if (!$('h3.worktime-error').length) {
+        // worktimes should not be registered but there is at least one!
+        // display worktime-tab but show alert
+        var worktime_warning = document.createElement('h3')
+        worktime_warning.className = 'alert alert-error worktime-error'
+        $(worktime_warning).append('{% trans "It is not allowed to add Work-Times to Members of Crews without individual Billing" %}')
+        $('#worktime_set-group').prepend(worktime_warning)
+      }
+      else {
+        $('h3.worktime-error').css('display', '')
+      }
+    }
+    else {
+      // hide the complete worktime tab
+      $("#suit_form_tabs a[href='#worktimes']").css('display', 'none')
+      $('.suit-tab.suit-tab-worktimes').css('display', 'none')
+    }
+  }
+
+  //-----------------------------------------------------------
+  // hide worktime tab if not individual_billing
+  if ("{{ individual_billing }}" == "False") {
+    hide_worktime();
+  }
+
+  //-----------------------------------------------------------
+  // only display Ticket-Field if Tickets had been given out
+  if (!$('.field-access span.readonly:last-child').text()) {
+    $('.field-access .multi-field-box:last-child label').css('display','none')
+  }
+
+  $('input[type="number"]').attr("min", "1")
+
+  $('#crew_id').closest('.multi-field-box').css("display", "none")
+  crew_change()
+});
+
+//-----------------------------------------------------------
+// callback function which triggers a selector update if "add TicketAdmin" is pressed
+function updateTicketStatus(row) {
+  row.find('td.field-ticket_out select').change(function() {
+    max = $(this).find('option[value="' + $(this).val() + '"]').attr("max") || 1
+    // set amount-widget maximum
+    $(this).closest('tr').find('.field-amount input[type="number"]').attr("max", max)
+    // reset amount if widget maximum is smaller
+    if ($(this).closest('tr').find('.field-amount input[type="number"]').val() > max)
+      $(this).closest('tr').find('.field-amount input[type="number"]').val(max)
+
+    // re-enable all available ticket options
+    $('#ticketadmin_set-2-group td.field-ticket_out select option[max]')
+      .addClass("available").removeAttr("disabled")
+    // hide all used ticket-options
+    $('#ticketadmin_set-2-group td.field-ticket_out select').each(function () {
+      select = $(this)
+      $('#ticketadmin_set-2-group td.field-ticket_out select').each(function () {
+        if (!select.is(this) && $(this).val() != "")
+          $(select).find('option[value="' + $(this).val() + '"]').removeClass("available").attr("disabled", true)
+      })
+    })
+  })
+  row.find('td.field-ticket_out select').trigger('change')
+}
+
+</script>
+{% endblock %}

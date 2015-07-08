@@ -1,0 +1,6 @@
+*~
+*.pyc
+crewdb.png
+env*
+suit_license.eml.asc
+db.sqlite3

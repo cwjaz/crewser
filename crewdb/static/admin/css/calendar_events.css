@@ -1,0 +1,56 @@
+td.datepickerSaturday {
+  background-color: #eee;
+}
+td.datepickerSunday {
+  background-color: #eee;
+}
+
+tbody.datepickerDays td.datepickerSelected {
+  background-color: #2f96b4 !important;
+}
+tbody.datepickerDays td.datepickerNotInMonth.datepickerSelected {
+  background-color: transparent !important;
+}
+td.datepickerSelected.vor_aufbau {
+  background: linear-gradient(#2f96b4, #2f96b4, #aa0) !important;
+}
+td.datepickerSelected.aufbau {
+  background: linear-gradient(#2f96b4, #2f96b4, #0a0) !important;
+}
+td.datepickerSelected.festival {
+  background: linear-gradient(#2f96b4, #2f96b4, #a00) !important;
+}
+td.datepickerSelected.abbau {
+  background: linear-gradient(#2f96b4, #2f96b4, #00a) !important;
+}
+
+td.vor_aufbau {
+  background: linear-gradient(white, white, #aa0);
+}
+td.aufbau {
+  background: linear-gradient(white, white, #0a0);
+}
+td.festival {
+  background: linear-gradient(white, white, #a00);
+}
+td.abbau {
+  background: linear-gradient(white, white, #00a);
+}
+td.datepickerSaturday.vor_aufbau, td.datepickerSunday.vor_aufbau {
+  background: linear-gradient(#eee, #eee, #aa0);
+}
+td.datepickerSaturday.aufbau, td.datepickerSunday.aufbau {
+  background: linear-gradient(#eee, #eee, #0a0);
+}
+td.datepickerSaturday.festival, td.datepickerSunday.festival {
+  background: linear-gradient(#eee, #eee, #a00);
+}
+td.datepickerSaturday.abbau, td.datepickerSunday.abbau {
+  background: linear-gradient(#eee, #eee, #00a);
+}
+
+
+.datepickerContainer {
+  padding-top: 2px;
+  padding-left: 2px;
+}

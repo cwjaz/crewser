@@ -1,0 +1,9 @@
+{% extends "admin/change_form.html" %}
+{% block after_related_objects %}
+{% load admin_static %}
+<!-- modified to load DatePicker - Calendar -->
+<script type="text/javascript" src="{% static 'DatePicker/js/datepicker.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'DatePicker/css/base.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'DatePicker/css/clean.css' %}" />
+<script type="text/javascript" src="{% static 'DatePicker/js/DatePickerHooks.js' %}"></script>
+{% endblock %}
